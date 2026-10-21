@@ -38,6 +38,14 @@ app.use('/api/dashboards', dashboardRoutes);
 const aiRoutes = require('./routes/ai');
 app.use('/api/v1/ai', aiRoutes);
 
+// LeadFlow AI Routes
+const leadflowRoutes = require('./routes/leadflow');
+app.use('/api/leadflow', leadflowRoutes);
+
+// Webhook Routes
+const webhookRoutes = require('./routes/webhook');
+app.use('/webhook', webhookRoutes);
+
 // Placeholder routes
 app.get('/api', (req, res) => {
     res.json({

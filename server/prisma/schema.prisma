@@ -1,4 +1,4 @@
-// This is your Prisma schema file for the MicroMind Base SAAS Template
+// This is your Prisma schema file for LeadFlow AI
 // Learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -22,7 +22,7 @@ model Organization {
   settings        Json?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  
+
   // Relations
   members         OrganizationMember[]
   subscription    Subscription?
@@ -30,7 +30,19 @@ model Organization {
   reports         Report[]
   documents       Document[]
   chatHistory     ChatHistory[]
-  
+
+  // LeadFlow relations
+  customers       Customer[]
+  conversations   Conversation[]
+  leads           Lead[]
+  revenueOpportunities RevenueOpportunity[]
+  products        Product[]
+  orders          Order[]
+  knowledgeItems  KnowledgeItem[]
+  aiActions       AIAction[]
+  approvals       Approval[]
+  invitations     Invitation[]
+
   @@index([slug])
   @@map("organizations")
 }
@@ -41,11 +53,11 @@ model OrganizationMember {
   userId          String
   role            OrgRole  @default(MEMBER)
   createdAt       DateTime @default(now())
-  
+
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([organizationId, userId])
   @@index([userId])
   @@index([organizationId])
@@ -64,10 +76,10 @@ model Subscription {
   stripeSubscriptionId  String?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
-  
+
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+
   @@index([status])
   @@index([plan])
   @@map("subscriptions")
@@ -83,7 +95,10 @@ model Invitation {
   acceptedAt      DateTime?
   invitedBy       String
   createdAt       DateTime @default(now())
-  
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@index([email])
   @@index([token])
   @@index([organizationId])
@@ -104,13 +119,19 @@ model User {
   currentOrganizationId String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-  
+
   // Relations
   sessions        Session[]
   memberships     OrganizationMember[]
   dashboards      Dashboard[]
   reports         Report[]
-  
+
+  // LeadFlow relations
+  assignedConversations Conversation[]  @relation("AssignedUser")
+  assignedLeads        Lead[]          @relation("AssignedSalesRep")
+  assignedOrders       Order[]         @relation("AssignedSalesRep")
+  approvals            Approval[]
+
   @@index([email])
   @@index([role])
   @@index([currentOrganizationId])
@@ -123,10 +144,10 @@ model Session {
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
-  
+
   // Relations
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
   @@index([token])
   @@index([expiresAt])
@@ -143,16 +164,16 @@ model Dashboard {
   userId          String
   title           String
   description     String?
-  sqlQuery        String?  @db.Text
+  sqlQuery        String? 
   chartConfig     Json?
   isPublic        Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  
+
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([organizationId])
   @@index([userId])
   @@index([isPublic])
@@ -169,11 +190,11 @@ model Report {
   format          String   @default("PDF")
   s3Path          String?
   createdAt       DateTime @default(now())
-  
+
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([organizationId])
   @@index([userId])
   @@index([createdAt])
@@ -197,10 +218,10 @@ model Document {
   metadata        Json?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
-  
+
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+
   @@index([organizationId])
   @@index([fileType])
   @@index([uploadedBy])
@@ -217,19 +238,314 @@ model ChatHistory {
   organizationId  String
   userId          String?
   agentType       String
-  message         String   @db.Text
-  response        String   @db.Text
+  message         String  
+  response        String  
   metadata        Json?
   createdAt       DateTime @default(now())
-  
+
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+
   @@index([organizationId])
   @@index([userId])
   @@index([agentType])
   @@index([createdAt])
   @@map("chat_history")
+}
+
+// ============================================================================
+// LEADFLOW AI — CUSTOMER MANAGEMENT
+// ============================================================================
+
+model Customer {
+  id              String   @id @default(uuid())
+  organizationId  String
+  externalId      String?  // ID from Messenger/WhatsApp/etc.
+  channel         Channel  @default(MESSENGER)
+  name            String
+  email           String?
+  phone           String?
+  avatarUrl       String?
+  metadata        Json?   // Raw channel profile data
+  firstSeenAt     DateTime @default(now())
+  lastSeenAt      DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversations   Conversation[]
+  leads           Lead[]
+  orders          Order[]
+
+  @@index([organizationId])
+  @@index([channel])
+  @@index([externalId])
+  @@index([email])
+  @@map("customers")
+}
+
+// ============================================================================
+// LEADFLOW AI — CONVERSATIONS & MESSAGES
+// ============================================================================
+
+model Conversation {
+  id              String       @id @default(uuid())
+  organizationId  String
+  customerId      String
+  channel         Channel      @default(MESSENGER)
+  channelThreadId String?      // Messenger thread/conversation ID
+  status          ConversationStatus @default(ACTIVE)
+  assignedTo      String?      // User ID of assigned sales rep
+  lastMessageAt   DateTime     @default(now())
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relations
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer        Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  assignedUser    User?         @relation("AssignedUser", fields: [assignedTo], references: [id])
+  messages        Message[]
+  lead            Lead?
+  aiActions       AIAction[]
+
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([channel])
+  @@index([status])
+  @@index([assignedTo])
+  @@map("conversations")
+}
+
+model Message {
+  id              String       @id @default(uuid())
+  conversationId  String
+  sender          MessageSender
+  content         String      
+  contentType     String       @default("text")  // text, image, quick_reply
+  metadata        Json?        // Raw Messenger/webhook payload
+  aiAnalysis      Json?        // MicroMind analysis: intent, score, etc.
+  aiActionId      String?      // Link to AI action if one was taken
+  createdAt       DateTime     @default(now())
+
+  // Relations
+  conversation    Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  aiAction        AIAction?     @relation(fields: [aiActionId], references: [id])
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+// ============================================================================
+// LEADFLOW AI — LEADS & REVENUE
+// ============================================================================
+
+model Lead {
+  id              String        @id @default(uuid())
+  organizationId  String
+  customerId      String
+  conversationId  String?        @unique
+  leadScore       Int?           // 0-100
+  intent          String?        // Product Inquiry, Support, Complaint, etc.
+  buyingIntent    BuyingIntent?  // Low, Medium, High, VeryHigh
+  potentialRevenue Float?      // Estimated revenue amount (EGP)
+  status          LeadStatus     @default(NEW)
+  assignedTo      String?        // User ID of sales rep
+  source          Channel        @default(MESSENGER)
+  notes           String?       
+  lastContactedAt DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  organization        Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer            Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  conversation        Conversation?       @relation(fields: [conversationId], references: [id])
+  assignedUser        User?               @relation("AssignedSalesRep", fields: [assignedTo], references: [id])
+  revenueOpportunity  RevenueOpportunity?
+
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([status])
+  @@index([leadScore])
+  @@index([assignedTo])
+  @@map("leads")
+}
+
+model RevenueOpportunity {
+  id              String              @id @default(uuid())
+  organizationId  String
+  leadId          String              @unique
+  title           String
+  potentialRevenue Float            // EGP
+  leadScore       Int?                // 0-100
+  reason          String?             // Why this opportunity was identified
+  recommendedAction String?           // What AI recommends
+  status          OpportunityStatus   @default(OPEN)
+  expectedCloseAt DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relations
+  organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead            Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([leadScore])
+  @@map("revenue_opportunities")
+}
+
+// ============================================================================
+// LEADFLOW AI — PRODUCTS & ORDERS
+// ============================================================================
+
+model Product {
+  id              String       @id @default(uuid())
+  organizationId  String
+  name            String
+  description     String?     
+  price           Float      // In EGP
+  category        String?
+  sku             String?
+  imageUrl        String?
+  isActive        Boolean      @default(true)
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  // Relations
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orderItems      OrderItem[]
+
+  @@index([organizationId])
+  @@index([category])
+  @@index([sku])
+  @@map("products")
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  organizationId  String
+  customerId      String
+  orderDate       DateTime      @default(now())
+  status          OrderStatus   @default(PENDING)
+  totalAmount     Float       @default(0)
+  currency        String        @default("EGP")
+  notes           String?      
+  assignedTo      String?       // Sales rep handling this order
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer        Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  assignedUser    User?         @relation("AssignedSalesRep", fields: [assignedTo], references: [id])
+  items           OrderItem[]
+
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([status])
+  @@index([orderDate])
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String    @id @default(uuid())
+  orderId         String
+  productId       String
+  quantity        Int       @default(1)
+  unitPrice       Float
+  totalPrice      Float
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product   @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// ============================================================================
+// LEADFLOW AI — KNOWLEDGE BASE
+// ============================================================================
+
+model KnowledgeItem {
+  id              String          @id @default(uuid())
+  organizationId  String
+  title           String
+  content         String         
+  category        KnowledgeCategory
+  tags            String[]        @default([])
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([category])
+  @@index([isActive])
+  @@map("knowledge_items")
+}
+
+// ============================================================================
+// LEADFLOW AI — AUTONOMY & APPROVALS
+// ============================================================================
+
+model AIAction {
+  id              String        @id @default(uuid())
+  organizationId  String
+  conversationId  String?       // Which conversation triggered this
+  customerId      String?
+  actionType      String        // send_discount, escalate, auto_reply, etc.
+  input           Json?         // What the AI saw (customer message, context)
+  output          Json?         // What the AI recommended
+  riskLevel       RiskLevel     @default(LOW)
+  status          ActionStatus  @default(PENDING)
+  requiresApproval Boolean      @default(false)
+  executedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  conversation    Conversation? @relation(fields: [conversationId], references: [id])
+  messages        Message[]
+  approval        Approval?
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([riskLevel])
+  @@index([conversationId])
+  @@map("ai_actions")
+}
+
+model Approval {
+  id              String        @id @default(uuid())
+  organizationId  String
+  aiActionId      String        @unique
+  requestedBy     String?       // User ID who can approve
+  approvedBy      String?       // User ID who approved/rejected
+  status          ApprovalStatus @default(PENDING)
+  reason          String?       // Why approved/rejected
+  createdAt       DateTime      @default(now())
+  resolvedAt      DateTime?
+
+  // Relations
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  aiAction        AIAction      @relation(fields: [aiActionId], references: [id], onDelete: Cascade)
+  approver        User?         @relation(fields: [approvedBy], references: [id])
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([approvedBy])
+  @@map("approvals")
 }
 
 // ============================================================================
@@ -239,6 +555,7 @@ model ChatHistory {
 enum UserRole {
   ADMIN
   MANAGER
+  SALES_REP
   USER
   VIEWER
 }
@@ -246,7 +563,9 @@ enum UserRole {
 enum OrgRole {
   OWNER
   ADMIN
+  MANAGER
   MEMBER
+  SALES_REP
   VIEWER
 }
 
@@ -272,4 +591,94 @@ enum DocumentType {
   SPREADSHEET
   DOCUMENT
   OTHER
+}
+
+// LeadFlow Enums
+
+enum Channel {
+  MESSENGER
+  INSTAGRAM
+  WHATSAPP
+  GMAIL
+  TELEGRAM
+}
+
+enum ConversationStatus {
+  ACTIVE
+  PENDING
+  RESOLVED
+  ARCHIVED
+}
+
+enum MessageSender {
+  CUSTOMER
+  AI
+  HUMAN
+  SYSTEM
+}
+
+enum BuyingIntent {
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFYING
+  QUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum OpportunityStatus {
+  OPEN
+  IN_PROGRESS
+  WON
+  LOST
+  DEFERRED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum KnowledgeCategory {
+  FAQ
+  PRODUCT
+  PRICE
+  POLICY
+  SHIPPING
+  RETURN
+  BUSINESS_INFO
+  OTHER
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ActionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXECUTED
+  FAILED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
 }

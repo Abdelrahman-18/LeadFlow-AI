@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-import { User, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Zap } from 'lucide-react';
 
 const LoginScreen = () => {
     const [username, setUsername] = useState('');
@@ -17,13 +17,7 @@ const LoginScreen = () => {
 
         try {
             await authService.login(username, password);
-            const user = authService.getCurrentUser();
-
-            if (user.role === 'MANAGER') {
-                navigate('/');
-            } else {
-                navigate('/collector/tasks');
-            }
+            navigate('/');
         } catch {
             setError('Invalid credentials. Please try again.');
         } finally {
@@ -37,148 +31,154 @@ const LoginScreen = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'var(--bg-page)',
-            padding: '2rem'
+            background: 'var(--bg-page)',
+            padding: '2rem',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            {/* Login Card */}
+            {/* Subtle background gradient */}
+            <div style={{
+                position: 'absolute',
+                top: '-50%',
+                right: '-30%',
+                width: '800px',
+                height: '800px',
+                background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+                pointerEvents: 'none'
+            }} />
+
             <div style={{
                 width: '100%',
-                maxWidth: '440px',
+                maxWidth: '420px',
                 backgroundColor: 'var(--bg-surface)',
-                borderRadius: '12px',
+                borderRadius: '16px',
                 border: '1px solid var(--border)',
                 overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                position: 'relative',
+                zIndex: 1
             }}>
                 {/* Header */}
                 <div style={{
-                    padding: '2.5rem 2rem 2rem 2rem',
+                    padding: '2.5rem 2rem 1.5rem 2rem',
                     textAlign: 'center',
                     borderBottom: '1px solid var(--border)'
                 }}>
-                    {/* Logo */}
                     <div style={{
-                        width: '64px',
-                        height: '64px',
-                        margin: '0 auto 1.5rem auto',
-                        background: 'linear-gradient(135deg, #E0AA3E 0%, #F5C451 100%)',
-                        borderRadius: '12px',
+                        width: '56px',
+                        height: '56px',
+                        margin: '0 auto 1.25rem auto',
+                        borderRadius: '14px',
+                        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '28px',
-                        fontWeight: '700',
-                        color: '#000000',
-                        letterSpacing: '1px'
+                        fontSize: '22px',
+                        fontWeight: '800',
+                        color: '#fff',
+                        boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)'
                     }}>
-                        YCC
+                        LF
                     </div>
 
-                    {/* Title */}
                     <h1 style={{
-                        margin: '0 0 0.5rem 0',
-                        fontSize: '1.75rem',
+                        margin: '0 0 0.25rem 0',
+                        fontSize: '1.5rem',
                         fontWeight: '700',
-                        color: 'var(--text-primary)'
+                        color: 'var(--text-primary)',
+                        letterSpacing: '-0.02em'
                     }}>
-                        Yasra
+                        LeadFlow AI
                     </h1>
                     <p style={{
                         margin: 0,
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#E0AA3E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px'
+                        fontSize: '0.8rem',
+                        fontWeight: '500',
+                        color: 'var(--text-muted)',
+                        letterSpacing: '0.3px'
                     }}>
-                        Credit Control
+                        Revenue Operations Platform
                     </p>
                 </div>
 
-                {/* Form Section */}
-                <div style={{
-                    padding: '2rem'
-                }}>
+                {/* Form */}
+                <div style={{ padding: '2rem' }}>
                     <h2 style={{
                         margin: '0 0 1.5rem 0',
-                        fontSize: '1.25rem',
+                        fontSize: '1rem',
                         fontWeight: '600',
-                        color: 'var(--text-primary)'
+                        color: 'var(--text-secondary)'
                     }}>
-                        Welcome Back
+                        Sign in to your account
                     </h2>
 
                     <form onSubmit={handleLogin}>
-                        {/* Username Field */}
                         <div style={{ marginBottom: '1.25rem' }}>
                             <label style={{
                                 display: 'block',
                                 marginBottom: '0.5rem',
-                                fontSize: '0.875rem',
+                                fontSize: '0.8rem',
                                 fontWeight: '600',
-                                color: 'var(--text-muted)'
+                                color: 'var(--text-muted)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
                             }}>
-                                Username
+                                Email
                             </label>
                             <div style={{ position: 'relative' }}>
-                                <User
-                                    size={18}
-                                    color="var(--text-muted)"
-                                    style={{
-                                        position: 'absolute',
-                                        left: '14px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        pointerEvents: 'none'
-                                    }}
-                                />
+                                <Mail size={16} style={{
+                                    position: 'absolute',
+                                    left: '14px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none',
+                                    color: 'var(--text-muted)'
+                                }} />
                                 <input
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Enter your username"
+                                    placeholder="admin@abcfashion.com"
                                     style={{
                                         width: '100%',
-                                        padding: '12px 14px 12px 44px',
-                                        borderRadius: '8px',
+                                        padding: '12px 14px 12px 42px',
+                                        borderRadius: '10px',
                                         border: '1px solid var(--border)',
                                         backgroundColor: 'var(--bg-input)',
                                         color: 'var(--text-primary)',
-                                        fontSize: '0.95rem',
+                                        fontSize: '0.9rem',
                                         outline: 'none',
                                         boxSizing: 'border-box',
-                                        transition: 'border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)'
+                                        transition: 'border-color 150ms'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#E0AA3E'}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
                                     onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                                     required
                                 />
                             </div>
                         </div>
 
-                        {/* Password Field */}
-                        <div style={{ marginBottom: '1.25rem' }}>
+                        <div style={{ marginBottom: '1.5rem' }}>
                             <label style={{
                                 display: 'block',
                                 marginBottom: '0.5rem',
-                                fontSize: '0.875rem',
+                                fontSize: '0.8rem',
                                 fontWeight: '600',
-                                color: 'var(--text-muted)'
+                                color: 'var(--text-muted)',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
                             }}>
                                 Password
                             </label>
                             <div style={{ position: 'relative' }}>
-                                <Lock
-                                    size={18}
-                                    color="var(--text-muted)"
-                                    style={{
-                                        position: 'absolute',
-                                        left: '14px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        pointerEvents: 'none'
-                                    }}
-                                />
+                                <Lock size={16} style={{
+                                    position: 'absolute',
+                                    left: '14px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none',
+                                    color: 'var(--text-muted)'
+                                }} />
                                 <input
                                     type="password"
                                     value={password}
@@ -186,104 +186,81 @@ const LoginScreen = () => {
                                     placeholder="Enter your password"
                                     style={{
                                         width: '100%',
-                                        padding: '12px 14px 12px 44px',
-                                        borderRadius: '8px',
+                                        padding: '12px 14px 12px 42px',
+                                        borderRadius: '10px',
                                         border: '1px solid var(--border)',
                                         backgroundColor: 'var(--bg-input)',
                                         color: 'var(--text-primary)',
-                                        fontSize: '0.95rem',
+                                        fontSize: '0.9rem',
                                         outline: 'none',
                                         boxSizing: 'border-box',
-                                        transition: 'border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)'
+                                        transition: 'border-color 150ms'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#E0AA3E'}
+                                    onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
                                     onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                                     required
                                 />
                             </div>
                         </div>
 
-                        {/* Forgot Password Link */}
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            marginBottom: '1.5rem'
-                        }}>
-                            <a
-                                href="#"
-                                style={{
-                                    color: '#E0AA3E',
-                                    fontSize: '0.85rem',
-                                    textDecoration: 'none',
-                                    fontWeight: '500',
-                                    transition: 'color 150ms'
-                                }}
-                                onMouseEnter={(e) => e.target.style.color = '#F5C451'}
-                                onMouseLeave={(e) => e.target.style.color = '#E0AA3E'}
-                            >
-                                Forgot username or password?
-                            </a>
-                        </div>
-
-                        {/* Error Message */}
                         {error && (
                             <div style={{
-                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                                border: '1px solid rgba(220, 38, 38, 0.3)',
-                                color: '#fca5a5',
-                                padding: '12px 14px',
-                                borderRadius: '8px',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.2)',
+                                color: '#FCA5A5',
+                                padding: '10px 14px',
+                                borderRadius: '10px',
                                 marginBottom: '1.5rem',
-                                fontSize: '0.9rem',
-                                fontWeight: '500'
+                                fontSize: '0.85rem'
                             }}>
                                 {error}
                             </div>
                         )}
 
-                        {/* Login Button */}
                         <button
                             type="submit"
                             disabled={loading}
                             style={{
                                 width: '100%',
                                 padding: '14px 24px',
-                                borderRadius: '8px',
+                                borderRadius: '10px',
                                 border: 'none',
-                                backgroundColor: loading ? '#ccaa44' : '#E0AA3E',
-                                color: '#000000',
-                                fontSize: '1rem',
+                                background: loading
+                                    ? 'linear-gradient(135deg, #4F46E5, #7C3AED)'
+                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                color: '#fff',
+                                fontSize: '0.95rem',
                                 fontWeight: '600',
                                 cursor: loading ? 'not-allowed' : 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '8px',
-                                transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-                                opacity: loading ? 0.7 : 1
+                                transition: 'opacity 150ms',
+                                opacity: loading ? 0.7 : 1,
+                                boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)'
                             }}
                             onMouseEnter={(e) => {
-                                if (!loading) e.target.style.backgroundColor = '#F5C451';
+                                if (!loading) e.target.style.background = 'linear-gradient(135deg, #4F46E5, #7C3AED)';
                             }}
                             onMouseLeave={(e) => {
-                                if (!loading) e.target.style.backgroundColor = '#E0AA3E';
+                                if (!loading) e.target.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
                             }}
                         >
                             {loading ? (
                                 <>
                                     <div className="spinner" style={{
-                                        width: '16px',
-                                        height: '16px',
-                                        border: '2px solid rgba(0, 0, 0, 0.3)',
-                                        borderTopColor: '#000000',
+                                        width: '16px', height: '16px',
+                                        border: '2px solid rgba(255,255,255,0.3)',
+                                        borderTopColor: '#fff',
                                         borderRadius: '50%'
                                     }}></div>
-                                    Logging in...
+                                    Signing in...
                                 </>
                             ) : (
                                 <>
-                                    Log In
-                                    <ArrowRight size={20} />
+                                    Sign In
+                                    <ArrowRight size={18} />
                                 </>
                             )}
                         </button>
@@ -292,14 +269,17 @@ const LoginScreen = () => {
 
                 {/* Footer */}
                 <div style={{
-                    padding: '1.5rem 2rem',
-                    textAlign: 'center',
-                    fontSize: '0.8rem',
+                    padding: '1rem 2rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.75rem',
                     color: 'var(--text-muted)',
                     borderTop: '1px solid var(--border)'
                 }}>
-                    <p style={{ margin: '0 0 0.25rem 0' }}>Version 1.0.0</p>
-                    <p style={{ margin: 0 }}>Contact IT Support for access issues.</p>
+                    <Zap size={12} />
+                    <span>Powered by AI Revenue Operations</span>
                 </div>
             </div>
         </div>

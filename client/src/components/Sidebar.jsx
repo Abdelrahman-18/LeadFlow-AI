@@ -3,9 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import {
-    Home, Users, BarChart2, Bot, FileText, HelpCircle,
-    GraduationCap, Settings, LogOut, Sun, Moon, Search,
-    ChevronRight, ChevronDown, BarChart3, FolderOpen
+    LayoutDashboard, MessageSquare, TrendingUp, Brain,
+    BookOpen, CheckSquare, Puzzle, Settings,
+    LogOut, Sun, Moon, Search,
+    ChevronDown, Bot, BarChart3, Zap
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -16,14 +17,10 @@ const Sidebar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    // Section expansion state - Analytics starts expanded
-    const [analyticsOpen, setAnalyticsOpen] = useState(true);
-
     const [theme, setTheme] = useState(() => {
         return localStorage.getItem('theme') || 'dark';
     });
 
-    // User data - initialized from localStorage
     const [userData] = useState(() => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -37,19 +34,14 @@ const Sidebar = () => {
                 console.error('Failed to load user data:', error);
             }
         }
-        return {
-            name: 'User',
-            role: 'Admin'
-        };
+        return { name: 'User', role: 'Admin' };
     });
 
-    // Apply theme
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
 
-    // Keyboard shortcut for search (Cmd/Ctrl+K)
     useEffect(() => {
         const handleKeyDown = (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -58,7 +50,6 @@ const Sidebar = () => {
                 document.getElementById('sidebar-search')?.focus();
             }
         };
-
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
@@ -74,23 +65,23 @@ const Sidebar = () => {
     };
 
     const isActive = (path) => {
-        return location.pathname.startsWith(path);
+        return location.pathname === path || location.pathname.startsWith(path + '/');
     };
 
-    // All searchable items (flattened for search)
-    const allSearchableItems = [
-        { id: 'home', label: t('nav.dashboard', 'Dashboard'), path: '/', icon: Home, keywords: ['home', 'dashboard'] },
-        { id: 'copilots', label: t('copilots.title', 'Co-Pilots'), path: '/copilots', icon: Users, keywords: ['copilots', 'ai', 'assistants', 'chat'] },
-        { id: 'documents', label: t('nav.documents', 'Documents'), path: '/documents', icon: FolderOpen, keywords: ['documents', 'files', 'library', 'archive'] },
-        { id: 'dashboards', label: t('nav.dashboards', 'Dashboards'), path: '/analytics/dashboards', icon: BarChart3, keywords: ['dashboards', 'analytics', 'charts', 'sql'] },
-        { id: 'report-bot', label: t('nav.reportBot', 'Report Bot'), path: '/report-bot', icon: Bot, keywords: ['report', 'bot', 'ai', 'generate'] },
-        { id: 'reports-explorer', label: t('nav.reportsExplorer', 'Reports Explorer'), path: '/reports', icon: FileText, keywords: ['reports', 'explorer', 'view'] },
-        { id: 'settings', label: t('nav.settings', 'Settings'), path: '/settings', icon: Settings, keywords: ['settings', 'preferences', 'config'] },
+    const navItems = [
+        { id: 'dashboard', label: 'Dashboard', path: '/', icon: LayoutDashboard, keywords: ['home', 'dashboard', 'overview'] },
+        { id: 'conversations', label: 'Conversations', path: '/conversations', icon: MessageSquare, keywords: ['inbox', 'messages', 'chat', 'conversations'] },
+        { id: 'opportunities', label: 'Revenue Opportunities', path: '/opportunities', icon: TrendingUp, keywords: ['revenue', 'opportunities', 'leads', 'pipeline'] },
+        { id: 'analytics', label: 'AI Analytics', path: '/analytics', icon: Brain, keywords: ['analytics', 'ai', 'insights', 'questions'] },
+        { id: 'copilots', label: 'Sales Co-Pilots', path: '/copilots', icon: Bot, keywords: ['copilots', 'coaching', 'sales', 'ai', 'strategy'] },
+        { id: 'knowledge', label: 'Knowledge Base', path: '/knowledge', icon: BookOpen, keywords: ['knowledge', 'faq', 'docs', 'information'] },
+        { id: 'approvals', label: 'Approvals', path: '/approvals', icon: CheckSquare, keywords: ['approvals', 'review', 'pending'] },
+        { id: 'integrations', label: 'Integrations', path: '/integrations', icon: Puzzle, keywords: ['integrations', 'messenger', 'channels'] },
+        { id: 'settings', label: 'Settings', path: '/settings', icon: Settings, keywords: ['settings', 'preferences', 'config'] },
     ];
 
-    // Search filtering
     const filteredItems = searchQuery.length > 0
-        ? allSearchableItems.filter(item => {
+        ? navItems.filter(item => {
             const searchLower = searchQuery.toLowerCase();
             const labelMatch = item.label.toLowerCase().includes(searchLower);
             const keywordMatch = item.keywords.some(kw => kw.includes(searchLower));
@@ -106,18 +97,32 @@ const Sidebar = () => {
 
     return (
         <aside className="sidebar">
-            {/* Header */}
+            {/* Header — LeadFlow AI Brand */}
             <div className="sidebar-header">
                 <div className="sidebar-logo">
-                    <img src="/assets/logo.png" alt="MicroMind Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                    <div style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
+                        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        fontWeight: '800',
+                        color: '#fff',
+                        letterSpacing: '0.5px'
+                    }}>
+                        LF
+                    </div>
                 </div>
                 <div className="sidebar-branding">
-                    <div className="brand-name">MicroMind</div>
-                    <div className="product-name">Base Template</div>
+                    <div className="brand-name" style={{ fontSize: '15px', fontWeight: '700' }}>LeadFlow</div>
+                    <div className="product-name" style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.5px' }}>Revenue Operations</div>
                 </div>
             </div>
 
-            {/* Command Bar Search */}
+            {/* Search */}
             <div className="sidebar-search-container">
                 <div className="sidebar-search-wrapper">
                     <Search className="search-icon" size={16} />
@@ -125,7 +130,7 @@ const Sidebar = () => {
                         id="sidebar-search"
                         type="text"
                         className="sidebar-search-input"
-                        placeholder="Jump to... (Ctrl+K)"
+                        placeholder="Search... (Ctrl+K)"
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
@@ -134,8 +139,6 @@ const Sidebar = () => {
                         onFocus={() => searchQuery.length > 0 && setIsSearchOpen(true)}
                     />
                 </div>
-
-                {/* Search Dropdown */}
                 {isSearchOpen && filteredItems.length > 0 && (
                     <div className="search-dropdown">
                         {filteredItems.map(item => (
@@ -154,78 +157,46 @@ const Sidebar = () => {
 
             {/* Navigation */}
             <nav className="sidebar-nav">
-                {/* Home / Dashboard */}
-                <button
-                    className={`nav-item ${isActive('/') && location.pathname === '/' ? 'active' : ''}`}
-                    onClick={() => handleNavigation('/')}
-                >
-                    <Home size={18} className="nav-icon" />
-                    <span className="nav-label">{t('nav.dashboard', 'Dashboard')}</span>
-                </button>
-
-                {/* AUTOMATION SECTION */}
                 <div className="nav-section">
-                    <div className="section-label">{t('nav.automation', 'Automation')}</div>
-
-                    {/* My Co-Pilots */}
-                    <button
-                        className={`nav-item ${isActive('/copilots') ? 'active' : ''}`}
-                        onClick={() => handleNavigation('/copilots')}
-                    >
-                        <Users size={18} className="nav-icon" />
-                        <span className="nav-label">{t('nav.copilots', 'Co-Pilots')}</span>
-                    </button>
-
-                    {/* Documents Library */}
-                    <button
-                        className={`nav-item ${isActive('/documents') ? 'active' : ''}`}
-                        onClick={() => handleNavigation('/documents')}
-                    >
-                        <FolderOpen size={18} className="nav-icon" />
-                        <span className="nav-label">{t('nav.documents', 'Documents')}</span>
-                    </button>
+                    <div className="section-label">Main</div>
+                    {navItems.slice(0, 2).map(item => (
+                        <button
+                            key={item.id}
+                            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                            onClick={() => handleNavigation(item.path)}
+                        >
+                            <item.icon size={18} className="nav-icon" />
+                            <span className="nav-label">{item.label}</span>
+                        </button>
+                    ))}
                 </div>
 
-                {/* ANALYTICS SECTION */}
                 <div className="nav-section">
-                    <div className="section-label">{t('nav.analytics', 'Analytics')}</div>
+                    <div className="section-label">Revenue</div>
+                    {navItems.slice(2, 5).map(item => (
+                        <button
+                            key={item.id}
+                            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                            onClick={() => handleNavigation(item.path)}
+                        >
+                            <item.icon size={18} className="nav-icon" />
+                            <span className="nav-label">{item.label}</span>
+                        </button>
+                    ))}
+                </div>
 
-                    {/* Analytics Sub-menu (Collapsible) */}
-                    <button
-                        className="nav-item nav-item-parent"
-                        onClick={() => setAnalyticsOpen(!analyticsOpen)}
-                    >
-                        <BarChart2 size={18} className="nav-icon" />
-                        <span className="nav-label">{t('nav.analytics', 'Analytics')}</span>
-                        {analyticsOpen ? <ChevronDown size={16} className="chevron" /> : <ChevronRight size={16} className="chevron" />}
-                    </button>
-
-                    {/* Analytics Sub-items */}
-                    {analyticsOpen && (
-                        <div className="nav-sub-items">
-                            <button
-                                className={`nav-item nav-sub-item ${isActive('/analytics/dashboards') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/analytics/dashboards')}
-                            >
-                                <BarChart3 size={16} className="nav-icon" />
-                                <span className="nav-label">{t('nav.dashboards', 'Dashboards')}</span>
-                            </button>
-                            <button
-                                className={`nav-item nav-sub-item ${isActive('/report-bot') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/report-bot')}
-                            >
-                                <Bot size={16} className="nav-icon" />
-                                <span className="nav-label">{t('nav.reportBot', 'Report Bot')}</span>
-                            </button>
-                            <button
-                                className={`nav-item nav-sub-item ${isActive('/reports') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/reports')}
-                            >
-                                <FileText size={16} className="nav-icon" />
-                                <span className="nav-label">{t('nav.reportsExplorer', 'Reports Explorer')}</span>
-                            </button>
-                        </div>
-                    )}
+                <div className="nav-section">
+                    <div className="section-label">Operations</div>
+                    {navItems.slice(5, 9).map(item => (
+                        <button
+                            key={item.id}
+                            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                            onClick={() => handleNavigation(item.path)}
+                        >
+                            <item.icon size={18} className="nav-icon" />
+                            <span className="nav-label">{item.label}</span>
+                        </button>
+                    ))}
                 </div>
             </nav>
 
@@ -234,51 +205,25 @@ const Sidebar = () => {
                 <div className="footer-links" style={{ padding: '8px 12px', borderBottom: 'none' }}>
                     <LanguageSwitcher />
                 </div>
-                {/* System Links */}
-                <div className="footer-links">
-                    <button className="footer-link" onClick={() => handleNavigation('/docs')}>
-                        <HelpCircle size={16} />
-                        <span>{t('nav.documentation', 'Documentation')}</span>
-                    </button>
-                    <button className="footer-link" onClick={() => handleNavigation('/campus')}>
-                        <GraduationCap size={16} />
-                        <span>{t('nav.campus', 'Campus')}</span>
-                    </button>
-                </div>
-
-                {/* User Plate */}
                 <div className="user-plate">
                     <div className="user-info">
-                        <div className="user-avatar">
+                        <div className="user-avatar" style={{
+                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            color: '#fff',
+                            fontWeight: '700'
+                        }}>
                             {userData.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="user-details">
                             <div className="user-name">{userData.name}</div>
-                            <div className="user-role">{userData.role}</div>
+                            <div className="user-role" style={{ color: 'var(--text-muted)', fontSize: '11px' }}>{userData.role}</div>
                         </div>
                     </div>
-
-                    {/* Control Cluster */}
                     <div className="control-cluster">
-                        <button
-                            className="control-btn"
-                            onClick={toggleTheme}
-                            title="Toggle theme"
-                        >
+                        <button className="control-btn" onClick={toggleTheme} title="Toggle theme">
                             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
                         </button>
-                        <button
-                            className="control-btn"
-                            onClick={() => navigate('/settings')}
-                            title="Settings"
-                        >
-                            <Settings size={16} />
-                        </button>
-                        <button
-                            className="control-btn"
-                            onClick={handleLogout}
-                            title="Logout"
-                        >
+                        <button className="control-btn" onClick={handleLogout} title="Logout">
                             <LogOut size={16} />
                         </button>
                     </div>

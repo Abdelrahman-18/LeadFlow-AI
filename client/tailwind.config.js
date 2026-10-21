@@ -6,10 +6,11 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // Brand Colors - Executive Gold Palette
+                // Brand Colors - LeadFlow AI Palette
                 brand: {
-                    primary: '#FFC107',  // Executive Gold
-                    hover: '#FFB300',    // Hover state
+                    primary: '#6366F1',  // LeadFlow Indigo
+                    hover: '#4F46E5',    // Hover state
+                    accent: '#8B5CF6',   // Purple accent
                     bone: '#F2F3EC',     // Brand bone/cream
                 },
                 // Backgrounds - Dark theme
@@ -23,12 +24,12 @@ module.exports = {
                 text: {
                     main: '#F2F3EC',     // Primary text
                     muted: '#888888',    // Secondary text
-                    onBrand: '#000000',  //Text on gold backgrounds
+                    onBrand: '#FFFFFF',  // Text on brand backgrounds
                 },
                 // Borders
                 border: {
                     subtle: '#333333',   // Default borders
-                    active: '#FFC107',   // Active/focused borders
+                    active: '#6366F1',   // Active/focused borders
                 },
                 // Status colors
                 status: {

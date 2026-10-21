@@ -6,7 +6,13 @@ import LoginScreen from './pages/LoginScreen';
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('./pages/HomePage'));
-const CoPilotsPage = lazy(() => import('./pages/CoPilotsPage'));
+const ConversationsPage = lazy(() => import('./pages/ConversationsPage'));
+const OpportunitiesPage = lazy(() => import('./pages/OpportunitiesPage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const KnowledgeBasePage = lazy(() => import('./pages/KnowledgeBasePage'));
+const ApprovalsPage = lazy(() => import('./pages/ApprovalsPage'));
+const IntegrationsPage = lazy(() => import('./pages/IntegrationsPage'));
+const CopilotsPage = lazy(() => import('./pages/CopilotsPage'));
 const DocumentsLibrary = lazy(() => import('./pages/DocumentsLibrary'));
 const DashboardsPage = lazy(() => import('./pages/DashboardsPage'));
 const ReportBotPage = lazy(() => import('./pages/ReportBotPage'));
@@ -16,7 +22,7 @@ const CampusPage = lazy(() => import('./pages/CampusPage'));
 const DocsPage = lazy(() => import('./pages/DocsPage'));
 const DocsViewer = lazy(() => import('./pages/DocsViewer'));
 
-// Branded loading fallback with MicroMind logo + golden spinner
+// Branded loading fallback with LeadFlow branding
 const LoadingFallback = () => (
     <div style={{
         minHeight: '100vh',
@@ -39,48 +45,55 @@ const LoadingFallback = () => (
                     position: 'absolute',
                     inset: 0,
                     borderRadius: '50%',
-                    border: '3px solid rgba(224,170,62,0.15)',
-                    borderTopColor: '#E0AA3E',
-                    animation: 'mm-spin 1s linear infinite',
+                    border: '3px solid rgba(99,102,241,0.15)',
+                    borderTopColor: '#6366F1',
+                    animation: 'lf-spin 1s linear infinite',
                 }} />
                 {/* Logo in center */}
-                <img
-                    src="/assets/logo.png"
-                    alt="MicroMind"
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '40px',
-                        height: '40px',
-                        objectFit: 'contain',
-                        animation: 'mm-pulse 2s ease-in-out infinite',
-                    }}
-                />
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px',
+                    fontWeight: '800',
+                    color: '#fff',
+                    animation: 'lf-pulse 2s ease-in-out infinite',
+                }}>
+                    LF
+                </div>
             </div>
             {/* Brand text */}
             <div style={{
                 fontSize: '1.1rem',
                 fontWeight: 700,
-                letterSpacing: '0.15em',
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                color: '#E0AA3E',
+                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
                 marginBottom: '6px',
-            }}>MicroMind</div>
+            }}>LeadFlow AI</div>
             <div style={{
                 fontSize: '0.7rem',
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
                 color: '#555',
-            }}>Business Suite</div>
+            }}>Revenue Operations</div>
         </div>
         {/* Keyframe animations injected via style tag */}
         <style>{`
-            @keyframes mm-spin {
+            @keyframes lf-spin {
                 to { transform: rotate(360deg); }
             }
-            @keyframes mm-pulse {
+            @keyframes lf-pulse {
                 0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
                 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.92); }
             }
@@ -99,15 +112,21 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                     <Route element={<ManagerLayout />}>
                         <Route path="/" element={<HomePage />} />
-                        <Route path="/copilots" element={<CoPilotsPage />} />
-                        <Route path="/documents" element={<DocumentsLibrary />} />
-                        <Route path="/analytics/dashboards" element={<DashboardsPage />} />
-                        <Route path="/report-bot" element={<ReportBotPage />} />
-                        <Route path="/reports" element={<ReportsPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/campus" element={<CampusPage />} />
-                        <Route path="/docs" element={<DocsPage />} />
-                        <Route path="/docs/:slug" element={<DocsViewer />} />
+                                                <Route path="/conversations" element={<ConversationsPage />} />
+                                                <Route path="/opportunities" element={<OpportunitiesPage />} />
+                                                <Route path="/analytics" element={<AnalyticsPage />} />
+                                                <Route path="/analytics/dashboards" element={<DashboardsPage />} />
+                                                <Route path="/knowledge" element={<KnowledgeBasePage />} />
+                                                <Route path="/approvals" element={<ApprovalsPage />} />
+                                                <Route path="/integrations" element={<IntegrationsPage />} />
+                                                <Route path="/copilots" element={<CopilotsPage />} />
+                                                <Route path="/documents" element={<DocumentsLibrary />} />
+                                                <Route path="/report-bot" element={<ReportBotPage />} />
+                                                <Route path="/reports" element={<ReportsPage />} />
+                                                <Route path="/settings" element={<SettingsPage />} />
+                                                <Route path="/campus" element={<CampusPage />} />
+                                                <Route path="/docs" element={<DocsPage />} />
+                                                <Route path="/docs/:slug" element={<DocsViewer />} />
                     </Route>
                 </Route>
 

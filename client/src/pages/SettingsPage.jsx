@@ -1,307 +1,263 @@
 import { useState, useEffect } from 'react';
-import { MMCard, MMButton } from '@sdk';
-import { User, Mail, Globe, Moon, Sun, Bell, Shield, Key } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { User, Mail, Globe, Moon, Sun, Bell, Shield, Key, ArrowLeft, Save } from 'lucide-react';
+
+const SectionCard = ({ icon: Icon, title, children }) => (
+    <div style={{
+        padding: '24px', borderRadius: '14px', marginBottom: '16px',
+        background: 'var(--bg-surface, #1C1C1C)',
+        border: '1px solid var(--border-subtle, #2a2a2a)'
+    }}>
+        <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            marginBottom: '20px', paddingBottom: '14px',
+            borderBottom: '1px solid var(--border-subtle, #222)'
+        }}>
+            <div style={{
+                width: '32px', height: '32px', borderRadius: '8px',
+                background: 'rgba(99,102,241,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+                <Icon size={16} style={{ color: '#818CF8' }} />
+            </div>
+            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                {title}
+            </h3>
+        </div>
+        {children}
+    </div>
+);
+
+const FormInput = ({ label, value, onChange, placeholder, type = 'text', icon: Icon }) => (
+    <div style={{ marginBottom: '14px' }}>
+        <label style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '12px', fontWeight: 600, color: 'var(--text-muted, #888)',
+            marginBottom: '6px'
+        }}>
+            {Icon && <Icon size={14} />}
+            {label}
+        </label>
+        <input
+            type={type}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            style={{
+                width: '100%', padding: '10px 14px', borderRadius: '10px',
+                border: '1px solid var(--border-subtle, #333)',
+                background: 'var(--bg-input, #262626)',
+                color: 'var(--text-primary, #F2F3EC)', fontSize: '13px',
+                outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s'
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = '#6366F1'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle, #333)'}
+        />
+    </div>
+);
 
 function SettingsPage() {
+    const navigate = useNavigate();
     const [settings, setSettings] = useState({
         displayName: '',
         email: '',
         language: 'en',
         theme: 'dark',
         notifications: true,
-        twoFactor: false
+        twoFactor: false,
     });
 
+    const [saving, setSaving] = useState(false);
+
     useEffect(() => {
-        // Load user settings
         const user = localStorage.getItem('user');
         const theme = localStorage.getItem('theme') || 'dark';
         const language = localStorage.getItem('language') || 'en';
 
         if (user) {
-            const userData = JSON.parse(user);
-            setSettings(prev => ({
-                ...prev,
-                displayName: userData.displayName || userData.name || '',
-                email: userData.email || '',
-                theme,
-                language
-            }));
+            try {
+                const userData = JSON.parse(user);
+                setSettings(prev => ({
+                    ...prev,
+                    displayName: userData.displayName || userData.name || '',
+                    email: userData.email || '',
+                    theme,
+                    language,
+                }));
+            } catch { /* ignore */ }
         }
     }, []);
 
-    const handleSave = () => {
-        // Save settings logic here
-        localStorage.setItem('theme', settings.theme);
-        localStorage.setItem('language', settings.language);
-
-        // Apply theme
-        document.documentElement.setAttribute('data-theme', settings.theme);
-
-        alert('Settings saved successfully!');
+    const applyTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
     };
 
     const handleThemeToggle = () => {
         const newTheme = settings.theme === 'dark' ? 'light' : 'dark';
         setSettings(prev => ({ ...prev, theme: newTheme }));
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
     };
 
+    const handleSave = async () => {
+        setSaving(true);
+        localStorage.setItem('language', settings.language);
+        applyTheme(settings.theme);
+        // Simulate save delay
+        await new Promise(r => setTimeout(r, 600));
+        setSaving(false);
+    };
+
+    const Toggle = ({ checked, onChange, label, description }) => (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0' }}>
+            <div>
+                <div style={{ fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '2px', fontSize: '13px' }}>
+                    {label}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>
+                    {description}
+                </div>
+            </div>
+            <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', cursor: 'pointer' }}>
+                <input type="checkbox" checked={checked} onChange={onChange}
+                    style={{ opacity: 0, width: 0, height: 0 }} />
+                <span style={{
+                    position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: checked ? '#6366F1' : '#333',
+                    transition: '0.3s', borderRadius: '24px'
+                }}>
+                    <span style={{
+                        position: 'absolute', height: '18px', width: '18px',
+                        left: checked ? '23px' : '3px', bottom: '3px',
+                        backgroundColor: 'white', transition: '0.3s', borderRadius: '50%'
+                    }} />
+                </span>
+            </label>
+        </div>
+    );
+
     return (
-        <div style={{ padding: '2rem', maxWidth: '900px' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-                Settings
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-                Manage your account settings and preferences
-            </p>
+        <div style={{ padding: '24px 32px', maxWidth: '800px', margin: '0 auto' }}>
+            {/* Header */}
+            <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '6px' }}>
+                    <button onClick={() => navigate(-1)} style={{
+                        padding: '6px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)',
+                        background: 'transparent', color: 'var(--text-muted, #888)', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                        <ArrowLeft size={16} />
+                    </button>
+                    <div>
+                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                            Settings
+                        </h1>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-muted, #888)' }}>
+                            Manage your account settings and preferences
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             {/* Profile Section */}
-            <MMCard style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <User size={20} />
-                    Profile Information
-                </h2>
+            <SectionCard icon={User} title="Profile Information">
+                <FormInput icon={User} label="Display Name" value={settings.displayName}
+                    onChange={(e) => setSettings(p => ({ ...p, displayName: e.target.value }))}
+                    placeholder="Your display name" />
+                <FormInput icon={Mail} label="Email" type="email" value={settings.email}
+                    onChange={(e) => setSettings(p => ({ ...p, email: e.target.value }))}
+                    placeholder="your@email.com" />
+            </SectionCard>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {/* Appearance */}
+            <SectionCard icon={settings.theme === 'dark' ? Moon : Sun} title="Appearance">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                            Display Name
-                        </label>
-                        <input
-                            type="text"
-                            value={settings.displayName}
-                            onChange={(e) => setSettings(prev => ({ ...prev, displayName: e.target.value }))}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                borderRadius: '8px',
-                                border: '1px solid var(--border)',
-                                backgroundColor: 'var(--bg-surface)',
-                                color: 'var(--text-primary)',
-                                fontSize: '0.9375rem'
-                            }}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                            <Mail size={16} style={{ display: 'inline', marginRight: '0.5rem' }} />
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            value={settings.email}
-                            onChange={(e) => setSettings(prev => ({ ...prev, email: e.target.value }))}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                borderRadius: '8px',
-                                border: '1px solid var(--border)',
-                                backgroundColor: 'var(--bg-surface)',
-                                color: 'var(--text-primary)',
-                                fontSize: '0.9375rem'
-                            }}
-                        />
-                    </div>
-                </div>
-            </MMCard>
-
-            {/* Appearance Section */}
-            <MMCard style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    {settings.theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
-                    Appearance
-                </h2>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                                Theme
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                Choose your preferred color scheme
-                            </div>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '2px', fontSize: '13px' }}>
+                            Theme
                         </div>
-                        <button
-                            onClick={handleThemeToggle}
-                            style={{
-                                padding: '0.5rem 1rem',
-                                borderRadius: '8px',
-                                border: '1px solid var(--primary)',
-                                backgroundColor: 'transparent',
-                                color: 'var(--primary)',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                fontWeight: 600
-                            }}
-                        >
-                            {settings.theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                            {settings.theme === 'dark' ? 'Light' : 'Dark'}
-                        </button>
-                    </div>
-
-                    <div>
-                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                            <Globe size={16} style={{ display: 'inline', marginRight: '0.5rem' }} />
-                            Language
-                        </label>
-                        <select
-                            value={settings.language}
-                            onChange={(e) => setSettings(prev => ({ ...prev, language: e.target.value }))}
-                            style={{
-                                width: '100%',
-                                padding: '0.75rem',
-                                borderRadius: '8px',
-                                border: '1px solid var(--border)',
-                                backgroundColor: 'var(--bg-surface)',
-                                color: 'var(--text-primary)',
-                                fontSize: '0.9375rem'
-                            }}
-                        >
-                            <option value="en">English</option>
-                            <option value="ar">العربية (Arabic)</option>
-                            <option value="fr">Français (French)</option>
-                            <option value="de">Deutsch (German)</option>
-                            <option value="sw">Kiswahili (Swahili)</option>
-                        </select>
-                    </div>
-                </div>
-            </MMCard>
-
-            {/* Notifications Section */}
-            <MMCard style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Bell size={20} />
-                    Notifications
-                </h2>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                            Push Notifications
-                        </div>
-                        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                            Receive notifications about important updates
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>
+                            Choose your preferred color scheme
                         </div>
                     </div>
-                    <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '24px' }}>
-                        <input
-                            type="checkbox"
-                            checked={settings.notifications}
-                            onChange={(e) => setSettings(prev => ({ ...prev, notifications: e.target.checked }))}
-                            style={{ opacity: 0, width: 0, height: 0 }}
-                        />
-                        <span style={{
-                            position: 'absolute',
-                            cursor: 'pointer',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: settings.notifications ? 'var(--primary)' : 'var(--border)',
-                            transition: '0.4s',
-                            borderRadius: '24px'
-                        }}>
-                            <span style={{
-                                position: 'absolute',
-                                content: '',
-                                height: '18px',
-                                width: '18px',
-                                left: settings.notifications ? '26px' : '3px',
-                                bottom: '3px',
-                                backgroundColor: 'white',
-                                transition: '0.4s',
-                                borderRadius: '50%'
-                            }} />
-                        </span>
-                    </label>
-                </div>
-            </MMCard>
-
-            {/* Security Section */}
-            <MMCard style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Shield size={20} />
-                    Security
-                </h2>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                                Two-Factor Authentication
-                            </div>
-                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                Add an extra layer of security to your account
-                            </div>
-                        </div>
-                        <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '24px' }}>
-                            <input
-                                type="checkbox"
-                                checked={settings.twoFactor}
-                                onChange={(e) => setSettings(prev => ({ ...prev, twoFactor: e.target.checked }))}
-                                style={{ opacity: 0, width: 0, height: 0 }}
-                            />
-                            <span style={{
-                                position: 'absolute',
-                                cursor: 'pointer',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                backgroundColor: settings.twoFactor ? 'var(--primary)' : 'var(--border)',
-                                transition: '0.4s',
-                                borderRadius: '24px'
-                            }}>
-                                <span style={{
-                                    position: 'absolute',
-                                    content: '',
-                                    height: '18px',
-                                    width: '18px',
-                                    left: settings.twoFactor ? '26px' : '3px',
-                                    bottom: '3px',
-                                    backgroundColor: 'white',
-                                    transition: '0.4s',
-                                    borderRadius: '50%'
-                                }} />
-                            </span>
-                        </label>
-                    </div>
-
-                    <button
-                        style={{
-                            padding: '0.75rem 1.5rem',
-                            borderRadius: '8px',
-                            border: '1px solid var(--border)',
-                            backgroundColor: 'var(--bg-surface)',
-                            color: 'var(--text-primary)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            fontWeight: 600,
-                            width: 'fit-content'
-                        }}
-                    >
-                        <Key size={16} />
-                        Change Password
+                    <button onClick={handleThemeToggle} style={{
+                        padding: '8px 16px', borderRadius: '8px',
+                        border: '1px solid var(--border-subtle, #333)',
+                        background: 'var(--bg-input, #262626)',
+                        color: 'var(--text-primary, #F2F3EC)', fontSize: '12px',
+                        fontWeight: 600, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: '6px'
+                    }}>
+                        {settings.theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                        {settings.theme === 'dark' ? 'Light' : 'Dark'}
                     </button>
                 </div>
-            </MMCard>
+
+                <div style={{ marginBottom: '4px' }}>
+                    <label style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        fontSize: '12px', fontWeight: 600, color: 'var(--text-muted, #888)', marginBottom: '6px'
+                    }}>
+                        <Globe size={14} /> Language
+                    </label>
+                    <select value={settings.language}
+                        onChange={(e) => setSettings(p => ({ ...p, language: e.target.value }))}
+                        style={{
+                            width: '100%', padding: '10px 14px', borderRadius: '10px',
+                            border: '1px solid var(--border-subtle, #333)',
+                            background: 'var(--bg-input, #262626)',
+                            color: 'var(--text-primary, #F2F3EC)', fontSize: '13px', outline: 'none'
+                        }}>
+                        <option value="en">English</option>
+                        <option value="ar">العربية (Arabic)</option>
+                        <option value="fr">Français (French)</option>
+                        <option value="de">Deutsch (German)</option>
+                        <option value="sw">Kiswahili (Swahili)</option>
+                    </select>
+                </div>
+            </SectionCard>
+
+            {/* Notifications */}
+            <SectionCard icon={Bell} title="Notifications">
+                <Toggle
+                    label="Push Notifications"
+                    description="Receive notifications about important updates"
+                    checked={settings.notifications}
+                    onChange={(e) => setSettings(p => ({ ...p, notifications: e.target.checked }))}
+                />
+            </SectionCard>
+
+            {/* Security */}
+            <SectionCard icon={Shield} title="Security">
+                <Toggle
+                    label="Two-Factor Authentication"
+                    description="Add an extra layer of security to your account"
+                    checked={settings.twoFactor}
+                    onChange={(e) => setSettings(p => ({ ...p, twoFactor: e.target.checked }))}
+                />
+                <button style={{
+                    marginTop: '16px', padding: '10px 16px', borderRadius: '8px',
+                    border: '1px solid var(--border-subtle, #333)',
+                    background: 'transparent', color: 'var(--text-primary, #F2F3EC)',
+                    fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '6px'
+                }}>
+                    <Key size={14} /> Change Password
+                </button>
+            </SectionCard>
 
             {/* Save Button */}
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <MMButton variant="secondary">
-                    Cancel
-                </MMButton>
-                <MMButton onClick={handleSave}>
-                    Save Changes
-                </MMButton>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                <button onClick={handleSave} disabled={saving} style={{
+                    padding: '12px 28px', borderRadius: '10px', border: 'none',
+                    background: saving ? 'rgba(99,102,241,0.3)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                    color: '#fff', fontSize: '14px', fontWeight: 600,
+                    cursor: saving ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    transition: 'all 0.2s'
+                }}>
+                    <Save size={16} /> {saving ? 'Saving...' : 'Save Settings'}
+                </button>
             </div>
         </div>
     );

@@ -1,9 +1,9 @@
 /**
- * MicroMind V4 Executive Gold Theme
+ * LeadFlow AI — Modern B2B AI SaaS Theme
  * Central CSS variables for SDK components
- * 
- * This file consolidates all theme variables used by SDK components.
- * Import this in your main app CSS or entry point.
+ *
+ * Identity: Revenue Operations + Business Intelligence
+ * Professional · Premium · Modern · Enterprise-ready · Data-driven
  */
 
 /* ========================================
@@ -11,83 +11,91 @@
    ======================================== */
 :root,
 [data-theme="dark"] {
-    /* Background Colors */
-    --bg-page: #0F0F0F;
-    /* Deep Night */
-    --bg-surface: #1C1C1C;
-    /* Carbon */
-    --bg-card: #1C1C1C;
+    /* Background Colors — Deep Slate/Navy */
+    --bg-page: #0B1120;
+    /* Deep Slate */
+    --bg-surface: #111827;
+    /* Card Surface */
+    --bg-card: #111827;
     /* Card background */
-    --bg-input: #0F0F0F;
+    --bg-input: #0F172A;
     /* Input backgrounds */
-    --bg-hover: #262626;
+    --bg-hover: #1F2937;
     /* Hover state */
+    --bg-elevated: #1E293B;
+    /* Elevated panels */
 
     /* Text Colors */
-    --text-primary: #F2F3EC;
-    /* Bone White - Primary text */
-    --text-secondary: #CCCCCC;
-    /* Light Grey - Secondary text */
-    --text-muted: #888888;
-    /* Tech Grey - Muted text */
-    --text-main: #F2F3EC;
+    --text-primary: #F8FAFC;
+    /* Near White */
+    --text-secondary: #CBD5E1;
+    /* Light Slate */
+    --text-muted: #94A3B8;
+    /* Muted Slate */
+    --text-main: #F8FAFC;
     /* Alias for primary */
 
     /* Border Colors */
-    --border: #333333;
-    /* Subtle Grey */
-    --border-color: #333333;
+    --border: #1F2937;
+    /* Subtle Border */
+    --border-color: #1F2937;
     /* Alias */
 
-    /* Brand Colors */
-    --primary: #E0AA3E;
-    /* Executive Gold */
-    --primary-color: #E0AA3E;
+    /* Brand Colors — Indigo/Violet (AI + Enterprise) */
+    --primary: #6366F1;
+    /* Indigo 500 */
+    --primary-hover: #818CF8;
+    /* Indigo 400 */
+    --primary-color: #6366F1;
     /* Alias */
+    --primary-soft: rgba(99, 102, 241, 0.12);
+    /* Soft indigo tint */
+    --accent-color: #06B6D4;
+    /* Cyan accent */
+    --violet: #8B5CF6;
+    /* Violet (AI) */
 
     /* Semantic Colors */
     --success-color: #10B981;
-    /* Green for success states */
+    /* Emerald */
     --warning-color: #F59E0B;
-    /* Amber for warnings */
+    /* Amber */
     --danger-color: #EF4444;
-    /* Red for errors/danger */
+    /* Red */
     --info-color: #3B82F6;
-    /* Blue for info */
-    --accent-color: #2CA58D;
-    /* Teal accent */
+    /* Blue */
 
     /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
 
     /* Spacing */
     --spacing-xs: 0.25rem;
-    /* 4px */
     --spacing-sm: 0.5rem;
-    /* 8px */
     --spacing-md: 1rem;
-    /* 16px */
     --spacing-lg: 1.5rem;
-    /* 24px */
     --spacing-xl: 2rem;
-    /* 32px */
 
     /* Typography */
     --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-heading: 'Outfit', sans-serif;
-    --font-mono: 'Fira Code', 'Courier New', monospace;
+    --font-heading: 'Inter', 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
     /* Shadows */
-    --shadow-sm: none;
-    --shadow-md: none;
-    --shadow-lg: none;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.25);
 
     /* Z-Index Layers */
     --z-dropdown: 1000;
     --z-modal: 2000;
     --z-toast: 3000;
+
+    /* Gradients */
+    --gradient-brand: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #6366F1 100%);
 }
 
 /* ========================================
@@ -95,70 +103,151 @@
    ======================================== */
 [data-theme="light"] {
     /* Background Colors */
-    --bg-page: #FFFFFF;
-    /* Pure White */
+    --bg-page: #F8FAFC;
+    /* Slate 50 */
     --bg-surface: #FFFFFF;
     /* White */
     --bg-card: #FFFFFF;
-    /* Card background */
-    --bg-input: #F9FAFB;
-    /* Light Grey Input */
-    --bg-hover: #F3F4F6;
-    /* Light Hover */
+    /* White */
+    --bg-input: #F1F5F9;
+    /* Slate 100 */
+    --bg-hover: #E2E8F0;
+    /* Slate 200 */
+    --bg-elevated: #F1F5F9;
 
     /* Text Colors */
-    --text-primary: #000000;
-    /* Pure Black */
-    --text-secondary: #374151;
-    /* Grey 700 */
-    --text-muted: #6B7280;
-    /* Grey 500 */
-    --text-main: #000000;
-    /* Alias for primary */
+    --text-primary: #0F172A;
+    /* Slate 900 */
+    --text-secondary: #334155;
+    /* Slate 700 */
+    --text-muted: #64748B;
+    /* Slate 500 */
+    --text-main: #0F172A;
 
     /* Border Colors */
-    --border: #E5E5E5;
-    /* Light Grey Border */
-    --border-color: #E5E5E5;
-    /* Alias */
+    --border: #E2E8F0;
+    --border-color: #E2E8F0;
 
     /* Brand Colors */
-    --primary: #E0AA3E;
-    /* Executive Gold (darker for contrast) */
-    --primary-color: #E0AA3E;
-    /* Alias */
+    --primary: #4F46E5;
+    /* Indigo 600 */
+    --primary-hover: #6366F1;
+    --primary-color: #4F46E5;
+    --primary-soft: rgba(79, 70, 229, 0.08);
+    --accent-color: #0891B2;
+    /* Cyan 600 */
+    --violet: #7C3AED;
 
     /* Semantic Colors */
-    --success-color: #16A34A;
-    /* Green 600 */
+    --success-color: #059669;
     --warning-color: #D97706;
-    /* Amber 600 */
     --danger-color: #DC2626;
-    /* Red 600 */
     --info-color: #2563EB;
-    /* Blue 600 */
-    --accent-color: #0D9488;
-    /* Teal 600 */
 
-    /* Shadows - Light mode has shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 4px 8px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
 }
 
 /* ========================================
-   UTILITY: Gold Gradient (For Buttons)
+   UTILITY: Brand Gradient (Buttons)
    ======================================== */
-.gold-gradient {
-    background: linear-gradient(135deg, #FFD700 0%, #E0AA3E 100%);
+.brand-gradient {
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
 }
 
 /* ========================================
    UTILITY: Glassmorphism
    ======================================== */
 .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ========================================
+   LeadFlow Specific Utilities
+   ======================================== */
+
+/* Metric number styling */
+.metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.metric-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+/* Channel status dot */
+.channel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.channel-connected {
+    background: #10B981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.channel-coming-soon {
+    background: #475569;
+}
+
+/* Lead score ring */
+.score-ring {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* AI gradient text for hero numbers */
+.ai-gradient-text {
+    background: linear-gradient(135deg, #6366F1 0%, #06B6D4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Slim scrollbars for inbox panels */
+.lf-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.lf-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lf-scroll::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: 3px;
+}
+
+.lf-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Conversation list item hover */
+.conv-item {
+    transition: background-color 150ms ease;
+}
+
+.conv-item:hover {
+    background: var(--bg-hover);
 }
