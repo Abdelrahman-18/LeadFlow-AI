@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ManagerLayout from './components/ManagerLayout';
 import LoginScreen from './pages/LoginScreen';
@@ -103,37 +104,42 @@ const LoadingFallback = () => (
 
 function App() {
     return (
-        <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<LoginScreen />} />
+        <AuthProvider>
+            <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                    {/* Public Routes */}
+                    <Route path="/login" element={<LoginScreen />} />
 
-                {/* Protected Routes */}
-                <Route element={<ProtectedRoute />}>
-                    <Route element={<ManagerLayout />}>
-                        <Route path="/" element={<HomePage />} />
-                                                <Route path="/conversations" element={<ConversationsPage />} />
-                                                <Route path="/opportunities" element={<OpportunitiesPage />} />
-                                                <Route path="/analytics" element={<AnalyticsPage />} />
-                                                <Route path="/analytics/dashboards" element={<DashboardsPage />} />
-                                                <Route path="/knowledge" element={<KnowledgeBasePage />} />
-                                                <Route path="/approvals" element={<ApprovalsPage />} />
-                                                <Route path="/integrations" element={<IntegrationsPage />} />
-                                                <Route path="/copilots" element={<CopilotsPage />} />
-                                                <Route path="/documents" element={<DocumentsLibrary />} />
-                                                <Route path="/report-bot" element={<ReportBotPage />} />
-                                                <Route path="/reports" element={<ReportsPage />} />
-                                                <Route path="/settings" element={<SettingsPage />} />
-                                                <Route path="/campus" element={<CampusPage />} />
-                                                <Route path="/docs" element={<DocsPage />} />
-                                                <Route path="/docs/:slug" element={<DocsViewer />} />
+                    {/* Root redirect to /leadflow */}
+                    <Route path="/" element={<Navigate replace to="/leadflow" />} />
+
+                    {/* Protected Routes */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route element={<ManagerLayout />}>
+                            <Route path="/leadflow" element={<HomePage />} />
+                            <Route path="/conversations" element={<ConversationsPage />} />
+                            <Route path="/opportunities" element={<OpportunitiesPage />} />
+                            <Route path="/analytics" element={<AnalyticsPage />} />
+                            <Route path="/analytics/dashboards" element={<DashboardsPage />} />
+                            <Route path="/knowledge" element={<KnowledgeBasePage />} />
+                            <Route path="/approvals" element={<ApprovalsPage />} />
+                            <Route path="/integrations" element={<IntegrationsPage />} />
+                            <Route path="/copilots" element={<CopilotsPage />} />
+                            <Route path="/documents" element={<DocumentsLibrary />} />
+                            <Route path="/report-bot" element={<ReportBotPage />} />
+                            <Route path="/reports" element={<ReportsPage />} />
+                            <Route path="/settings" element={<SettingsPage />} />
+                            <Route path="/campus" element={<CampusPage />} />
+                            <Route path="/docs" element={<DocsPage />} />
+                            <Route path="/docs/:slug" element={<DocsViewer />} />
+                        </Route>
                     </Route>
-                </Route>
 
-                {/* Fallback redirect */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </Suspense>
+                    {/* Fallback redirect */}
+                    <Route path="*" element={<Navigate replace to="/leadflow" />} />
+                </Routes>
+            </Suspense>
+        </AuthProvider>
     );
 }
 

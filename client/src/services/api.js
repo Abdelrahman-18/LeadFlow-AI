@@ -34,10 +34,14 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            // Token expired or invalid - clear storage and redirect to login
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+            const token = localStorage.getItem('token');
+            const isDemoMode = !token || token === 'demo-token';
+            if (!isDemoMode) {
+                // Token expired or invalid - clear storage and redirect to login
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }

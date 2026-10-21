@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import {
     LayoutDashboard, MessageSquare, TrendingUp, Brain,
@@ -14,6 +15,7 @@ const Sidebar = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -21,21 +23,10 @@ const Sidebar = () => {
         return localStorage.getItem('theme') || 'dark';
     });
 
-    const [userData] = useState(() => {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            try {
-                const user = JSON.parse(userStr);
-                return {
-                    name: user.displayName || user.name || 'User',
-                    role: user.role || 'Admin'
-                };
-            } catch (error) {
-                console.error('Failed to load user data:', error);
-            }
-        }
-        return { name: 'User', role: 'Admin' };
-    });
+    const userData = {
+        name: user?.displayName || user?.name || 'Demo Admin',
+        role: user?.role || 'Admin'
+    };
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
@@ -59,8 +50,7 @@ const Sidebar = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        logout();
         navigate('/login');
     };
 
@@ -69,7 +59,7 @@ const Sidebar = () => {
     };
 
     const navItems = [
-        { id: 'dashboard', label: 'Dashboard', path: '/', icon: LayoutDashboard, keywords: ['home', 'dashboard', 'overview'] },
+        { id: 'dashboard', label: 'Dashboard', path: '/leadflow', icon: LayoutDashboard, keywords: ['home', 'dashboard', 'overview'] },
         { id: 'conversations', label: 'Conversations', path: '/conversations', icon: MessageSquare, keywords: ['inbox', 'messages', 'chat', 'conversations'] },
         { id: 'opportunities', label: 'Revenue Opportunities', path: '/opportunities', icon: TrendingUp, keywords: ['revenue', 'opportunities', 'leads', 'pipeline'] },
         { id: 'analytics', label: 'AI Analytics', path: '/analytics', icon: Brain, keywords: ['analytics', 'ai', 'insights', 'questions'] },

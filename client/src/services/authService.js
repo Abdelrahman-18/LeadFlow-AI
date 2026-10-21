@@ -1,6 +1,14 @@
 import api from './api';
 
+export const DEFAULT_DEMO_USER = {
+    email: 'admin@abcfashion.com',
+    name: 'Demo Admin',
+    displayName: 'Demo Admin',
+    role: 'ADMIN'
+};
+
 const login = async (username, password, twoFactorToken = null) => {
+    sessionStorage.removeItem('demo_logged_out');
     const response = await api.post('/auth/login', { username, password, twoFactorToken });
 
     // If 2FA is required, return the response without storing token
@@ -17,6 +25,7 @@ const login = async (username, password, twoFactorToken = null) => {
 };
 
 const logout = () => {
+    sessionStorage.setItem('demo_logged_out', 'true');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/login';
@@ -24,8 +33,21 @@ const logout = () => {
 
 const getCurrentUser = () => {
     const userStr = localStorage.getItem('user');
-    if (userStr) return JSON.parse(userStr);
-    return null;
+    if (userStr) {
+        try {
+            return JSON.parse(userStr);
+        } catch {
+            return DEFAULT_DEMO_USER;
+        }
+    }
+    if (sessionStorage.getItem('demo_logged_out') === 'true') {
+        return null;
+    }
+    localStorage.setItem('user', JSON.stringify(DEFAULT_DEMO_USER));
+    if (!localStorage.getItem('token')) {
+        localStorage.setItem('token', 'demo-token');
+    }
+    return DEFAULT_DEMO_USER;
 };
 
 const updateCurrentUser = (updatedUser) => {
@@ -102,6 +124,7 @@ const disable2FA = async (password) => {
 };
 
 export default {
+    DEFAULT_DEMO_USER,
     login,
     logout,
     getCurrentUser,
