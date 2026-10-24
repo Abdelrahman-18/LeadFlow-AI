@@ -52,7 +52,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #E0AA3E;
+    color: #E6B84D;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -61,7 +61,7 @@
 }
 
 .df-title {
-    color: #F2F3EC;
+    color: #F5F6FA;
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
@@ -84,7 +84,7 @@
 }
 
 .df-close-btn:hover {
-    color: #F2F3EC;
+    color: #F5F6FA;
     border-color: #666;
     background: rgba(255, 255, 255, 0.05);
 }
@@ -130,7 +130,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: #E0AA3E;
+    color: #E6B84D;
     margin-bottom: 8px;
 }
 
@@ -140,7 +140,7 @@
     background: #262626;
     border: 1px solid #333;
     border-radius: 6px;
-    color: #F2F3EC;
+    color: #F5F6FA;
     font-size: 0.875rem;
     font-family: inherit;
     outline: none;
@@ -149,8 +149,8 @@
 }
 
 .df-input:focus {
-    border-color: #E0AA3E;
-    box-shadow: 0 0 0 3px rgba(224, 170, 62, 0.1);
+    border-color: #E6B84D;
+    box-shadow: 0 0 0 3px rgba(230, 184, 77, 0.1);
 }
 
 .df-input::placeholder {
@@ -163,7 +163,7 @@
     background: #262626;
     border: 1px solid #333;
     border-radius: 6px;
-    color: #F2F3EC;
+    color: #F5F6FA;
     font-size: 0.875rem;
     font-family: inherit;
     outline: none;
@@ -174,8 +174,8 @@
 }
 
 .df-textarea:focus {
-    border-color: #E0AA3E;
-    box-shadow: 0 0 0 3px rgba(224, 170, 62, 0.1);
+    border-color: #E6B84D;
+    box-shadow: 0 0 0 3px rgba(230, 184, 77, 0.1);
 }
 
 .df-textarea::placeholder {
@@ -207,13 +207,13 @@
 
 .df-upload-zone:hover,
 .df-upload-zone.drag-over {
-    border-color: #E0AA3E;
-    background: rgba(224, 170, 62, 0.03);
-    color: #E0AA3E;
+    border-color: #E6B84D;
+    background: rgba(230, 184, 77, 0.03);
+    color: #E6B84D;
 }
 
 .df-upload-link {
-    color: #E0AA3E;
+    color: #E6B84D;
     font-weight: 600;
 }
 
@@ -284,7 +284,7 @@
 }
 
 .df-checkbox-label:hover {
-    color: #F2F3EC;
+    color: #F5F6FA;
 }
 
 .df-checkbox {
@@ -293,14 +293,14 @@
     border: 2px solid #444;
     border-radius: 4px;
     cursor: pointer;
-    accent-color: #E0AA3E;
+    accent-color: #E6B84D;
     flex-shrink: 0;
 }
 
 /* =============== AI CONFIGURATION SECTION =============== */
 .df-ai-section {
     background: #1E1E1E;
-    border: 1px solid rgba(224, 170, 62, 0.2);
+    border: 1px solid rgba(230, 184, 77, 0.2);
     border-radius: 12px;
     padding: 20px 24px 10px;
     margin-bottom: 24px;
@@ -310,7 +310,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #E0AA3E;
+    color: #E6B84D;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -355,7 +355,7 @@
 }
 
 .df-cancel-btn:hover {
-    color: #F2F3EC;
+    color: #F5F6FA;
 }
 
 .df-submit-btn {
@@ -363,7 +363,7 @@
     align-items: center;
     gap: 10px;
     padding: 14px 36px;
-    background: linear-gradient(135deg, #E0AA3E 0%, #F5C451 100%);
+    background: #E6B84D;
     color: #000;
     border: none;
     border-radius: 8px;
@@ -373,13 +373,13 @@
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(224, 170, 62, 0.3);
+    box-shadow: 0 2px 8px rgba(230, 184, 77, 0.3);
 }
 
 .df-submit-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(224, 170, 62, 0.4);
-    background: linear-gradient(135deg, #F5C451 0%, #FFD700 100%);
+    box-shadow: 0 4px 16px rgba(230, 184, 77, 0.4);
+    background: linear-gradient(135deg, #E6B84D 0%, #FFD700 100%);
 }
 
 .df-submit-btn:disabled,

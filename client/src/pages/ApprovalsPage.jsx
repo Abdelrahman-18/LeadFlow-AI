@@ -95,12 +95,12 @@ function ApprovalsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                         <div style={{
                             width: '32px', height: '32px', borderRadius: '8px',
-                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            background: 'var(--brand-gradient)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             <CheckSquare size={16} color="#fff" />
                         </div>
-                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Approvals
                         </h1>
                         {pendingCount > 0 && (
@@ -138,7 +138,7 @@ function ApprovalsPage() {
                             padding: '6px 16px', borderRadius: '16px', border: 'none',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                             background: statusFilter === status
-                                ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+                                ? 'var(--brand-gradient)'
                                 : 'rgba(255,255,255,0.06)',
                             color: statusFilter === status ? '#fff' : 'var(--text-muted, #888)',
                             transition: 'all 0.2s'
@@ -152,12 +152,12 @@ function ApprovalsPage() {
             {/* Approval List */}
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                    <Loader2 className="spin" size={28} style={{ color: '#6366F1' }} />
+                    <Loader2 className="spin" size={28} style={{ color: '#805BE7' }} />
                 </div>
             ) : approvals.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text-muted, #555)' }}>
                     <CheckSquare size={56} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '6px' }}>
                         {statusFilter === 'PENDING' ? 'No pending approvals' : 'No approvals found'}
                     </div>
                     <div style={{ fontSize: '13px' }}>
@@ -171,7 +171,7 @@ function ApprovalsPage() {
                         return (
                             <div key={approval.id} style={{
                                 padding: '20px', borderRadius: '12px',
-                                background: 'var(--bg-surface, #1C1C1C)',
+                                background: 'var(--bg-surface, #1E2025)',
                                 border: approval.status === 'PENDING'
                                     ? '1px solid rgba(251,191,36,0.2)'
                                     : '1px solid var(--border-subtle, #2a2a2a)',
@@ -208,7 +208,7 @@ function ApprovalsPage() {
                                         </div>
 
                                         {/* Action type + details */}
-                                        <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '4px' }}>
                                             {approval.aiAction?.actionType || 'AI Action'}
                                         </div>
 
@@ -220,7 +220,7 @@ function ApprovalsPage() {
                                         {approval.aiAction?.conversation && (
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-muted, #888)' }}>
                                                 <MessageSquare size={12} />
-                                                <span>Customer: <strong style={{ color: 'var(--text-primary, #F2F3EC)' }}>{approval.aiAction.conversation.customer?.name || 'Unknown'}</strong></span>
+                                                <span>Customer: <strong style={{ color: 'var(--text-primary, #F5F6FA)' }}>{approval.aiAction.conversation.customer?.name || 'Unknown'}</strong></span>
                                             </div>
                                         )}
 
@@ -228,7 +228,7 @@ function ApprovalsPage() {
                                         {approval.status !== 'PENDING' && (
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px', fontSize: '12px', color: 'var(--text-muted, #888)' }}>
                                                 {approval.approver && (
-                                                    <span>By: <strong style={{ color: 'var(--text-primary, #F2F3EC)' }}>{approval.approver.displayName}</strong></span>
+                                                    <span>By: <strong style={{ color: 'var(--text-primary, #F5F6FA)' }}>{approval.approver.displayName}</strong></span>
                                                 )}
                                                 {approval.resolvedAt && (
                                                     <span>{new Date(approval.resolvedAt).toLocaleDateString()}</span>
@@ -287,10 +287,10 @@ function ApprovalsPage() {
                 }} onClick={() => setReasonModal(null)}>
                     <div style={{
                         width: '400px', padding: '24px', borderRadius: '16px',
-                        background: 'var(--bg-surface, #1C1C1C)',
+                        background: 'var(--bg-surface, #1E2025)',
                         border: '1px solid var(--border-subtle, #333)'
                     }} onClick={(e) => e.stopPropagation()}>
-                        <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Reason for Rejection
                         </h3>
                         <textarea
@@ -302,7 +302,7 @@ function ApprovalsPage() {
                                 width: '100%', padding: '10px 14px', borderRadius: '8px',
                                 border: '1px solid var(--border-subtle, #333)',
                                 background: 'var(--bg-input, #262626)',
-                                color: 'var(--text-primary, #F2F3EC)',
+                                color: 'var(--text-primary, #F5F6FA)',
                                 fontSize: '13px', outline: 'none', resize: 'vertical',
                                 boxSizing: 'border-box', fontFamily: 'inherit'
                             }}

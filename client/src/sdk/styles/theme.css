@@ -42,17 +42,17 @@
     /* Alias */
 
     /* Brand Colors — Indigo/Violet (AI + Enterprise) */
-    --primary: #6366F1;
+    --primary: #805BE7;
     /* Indigo 500 */
-    --primary-hover: #818CF8;
+    --primary-hover: #9B7DF0;
     /* Indigo 400 */
-    --primary-color: #6366F1;
+    --primary-color: #805BE7;
     /* Alias */
-    --primary-soft: rgba(99, 102, 241, 0.12);
+    --primary-soft: rgba(128, 91, 231, 0.12);
     /* Soft indigo tint */
     --accent-color: #06B6D4;
     /* Cyan accent */
-    --violet: #8B5CF6;
+    --violet: #9B7DF0;
     /* Violet (AI) */
 
     /* Semantic Colors */
@@ -86,7 +86,7 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.25);
+    --shadow-glow: 0 0 24px rgba(128, 91, 231, 0.25);
 
     /* Z-Index Layers */
     --z-dropdown: 1000;
@@ -94,8 +94,8 @@
     --z-toast: 3000;
 
     /* Gradients */
-    --gradient-brand: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-    --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #6366F1 100%);
+    --gradient-brand: var(--brand-gradient);
+    --gradient-accent: linear-gradient(135deg, #06B6D4 0%, #805BE7 100%);
 }
 
 /* ========================================
@@ -129,14 +129,14 @@
     --border-color: #E2E8F0;
 
     /* Brand Colors */
-    --primary: #4F46E5;
+    --primary: #6C47D6;
     /* Indigo 600 */
-    --primary-hover: #6366F1;
-    --primary-color: #4F46E5;
-    --primary-soft: rgba(79, 70, 229, 0.08);
+    --primary-hover: #805BE7;
+    --primary-color: #6C47D6;
+    --primary-soft: rgba(108, 71, 214, 0.08);
     --accent-color: #0891B2;
     /* Cyan 600 */
-    --violet: #7C3AED;
+    --violet: #6C47D6;
 
     /* Semantic Colors */
     --success-color: #059669;
@@ -154,7 +154,7 @@
    UTILITY: Brand Gradient (Buttons)
    ======================================== */
 .brand-gradient {
-    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    background: var(--brand-gradient);
 }
 
 /* ========================================
@@ -218,7 +218,7 @@
 
 /* AI gradient text for hero numbers */
 .ai-gradient-text {
-    background: linear-gradient(135deg, #6366F1 0%, #06B6D4 100%);
+    background: linear-gradient(135deg, #805BE7 0%, #06B6D4 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

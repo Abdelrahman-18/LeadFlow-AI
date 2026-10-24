@@ -43,8 +43,8 @@
 }
 
 .mm-switch-input:checked+.mm-switch-slider {
-    background: var(--primary, #E0AA3E);
-    border-color: var(--primary, #E0AA3E);
+    background: var(--primary, #805BE7);
+    border-color: var(--primary, #805BE7);
 }
 
 .mm-switch-input:checked+.mm-switch-slider::before {
@@ -53,11 +53,11 @@
 }
 
 .mm-switch-input:focus+.mm-switch-slider {
-    box-shadow: 0 0 0 2px rgba(224, 170, 62, 0.2);
+    box-shadow: 0 0 0 2px rgba(230, 184, 77, 0.2);
 }
 
 .mm-switch-wrapper:hover:not(.disabled) .mm-switch-slider {
-    border-color: var(--primary, #E0AA3E);
+    border-color: var(--primary, #805BE7);
 }
 
 .mm-switch-label {

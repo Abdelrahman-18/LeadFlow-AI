@@ -137,19 +137,19 @@ I can help you with:
                 width: '320px', minWidth: '320px',
                 borderRight: '1px solid var(--border-subtle, #2a2a2a)',
                 display: 'flex', flexDirection: 'column',
-                background: 'var(--bg-surface, #1C1C1C)'
+                background: 'var(--bg-surface, #1E2025)'
             }}>
                 {/* Header */}
                 <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border-subtle, #2a2a2a)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                         <div style={{
                             width: '32px', height: '32px', borderRadius: '8px',
-                            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+                            background: 'linear-gradient(135deg, #9B7DF0, #805BE7)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             <Bot size={16} color="#fff" />
                         </div>
-                        <h2 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h2 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Sales Co-Pilots
                         </h2>
                     </div>
@@ -161,15 +161,15 @@ I can help you with:
                 {/* Quick Actions */}
                 <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle, #2a2a2a)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                             Quick Actions
                         </span>
                         <button
                             onClick={() => setShowHistory(!showHistory)}
                             style={{
                                 padding: '4px 10px', borderRadius: '6px', border: 'none',
-                                background: showHistory ? 'rgba(99,102,241,0.12)' : 'transparent',
-                                color: showHistory ? '#818CF8' : 'var(--text-muted, #888)',
+                                background: showHistory ? 'rgba(128, 91, 231,0.12)' : 'transparent',
+                                color: showHistory ? '#9B7DF0' : 'var(--text-muted, #888)',
                                 fontSize: '11px', fontWeight: 600, cursor: 'pointer',
                                 display: 'flex', alignItems: 'center', gap: '4px'
                             }}
@@ -188,9 +188,9 @@ I can help you with:
                                         onClick={() => handleQuickAction(action.id)}
                                         style={{
                                             padding: '12px', borderRadius: '10px', border: '1px solid',
-                                            borderColor: isActive ? '#8B5CF6' : 'var(--border-subtle, #333)',
-                                            background: isActive ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
-                                            color: isActive ? '#C084FC' : 'var(--text-primary, #F2F3EC)',
+                                            borderColor: isActive ? '#9B7DF0' : 'var(--border-subtle, #333)',
+                                            background: isActive ? 'rgba(128, 91, 231,0.1)' : 'rgba(255,255,255,0.03)',
+                                            color: isActive ? '#C084FC' : 'var(--text-primary, #F5F6FA)',
                                             cursor: 'pointer', textAlign: 'left',
                                             display: 'flex', flexDirection: 'column', gap: '4px',
                                             transition: 'all 0.2s'
@@ -228,7 +228,7 @@ I can help you with:
                                         onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                     >
-                                        <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary, #F2F3EC)' }}>
+                                        <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary, #F5F6FA)' }}>
                                             {item.question.substring(0, 60)}{item.question.length > 60 ? '...' : ''}
                                         </span>
                                         <span style={{ fontSize: '10px', color: 'var(--text-muted, #666)' }}>
@@ -243,7 +243,7 @@ I can help you with:
 
                 {/* Suggested Prompts */}
                 <div style={{ padding: '16px 20px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                         Suggested Questions
                     </span>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
@@ -259,8 +259,8 @@ I can help you with:
                                     transition: 'all 0.2s'
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = 'rgba(99,102,241,0.08)';
-                                    e.currentTarget.style.borderColor = '#6366F1';
+                                    e.currentTarget.style.background = 'rgba(128, 91, 231,0.08)';
+                                    e.currentTarget.style.borderColor = '#805BE7';
                                     e.currentTarget.style.color = '#fff';
                                 }}
                                 onMouseLeave={(e) => {
@@ -277,23 +277,23 @@ I can help you with:
             </div>
 
             {/* Right Panel - Chat Interface */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg-page, #0F0F0F)' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--bg-page, #111214)' }}>
                 {/* Chat Header */}
                 <div style={{
                     padding: '16px 24px', borderBottom: '1px solid var(--border-subtle, #2a2a2a)',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    background: 'var(--bg-surface, #1C1C1C)'
+                    background: 'var(--bg-surface, #1E2025)'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{
                             width: '36px', height: '36px', borderRadius: '10px',
-                            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+                            background: 'linear-gradient(135deg, #9B7DF0, #805BE7)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             <Bot size={18} color="#fff" />
                         </div>
                         <div>
-                            <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                            <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                                 Sales Co-Pilot
                             </div>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted, #888)' }}>
@@ -321,26 +321,26 @@ I can help you with:
                             <div style={{
                                 maxWidth: '85%', padding: '16px 20px', borderRadius: '16px',
                                 background: msg.sender === 'ai'
-                                    ? 'var(--bg-surface, #1C1C1C)'
-                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                    ? 'var(--bg-surface, #1E2025)'
+                                    : 'var(--brand-gradient)',
                                 border: msg.sender === 'ai' ? '1px solid var(--border-subtle, #2a2a2a)' : 'none',
-                                color: msg.sender === 'ai' ? 'var(--text-primary, #F2F3EC)' : '#fff',
+                                color: msg.sender === 'ai' ? 'var(--text-primary, #F5F6FA)' : '#fff',
                                 fontSize: '14px', lineHeight: 1.6,
-                                boxShadow: msg.sender === 'user' ? '0 4px 20px rgba(99,102,241,0.3)' : 'none'
+                                boxShadow: msg.sender === 'user' ? '0 4px 20px rgba(128, 91, 231,0.3)' : 'none'
                             }}>
                                 {msg.sender === 'ai' && (
                                     <div style={{
                                         display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px',
                                         paddingBottom: '8px', borderBottom: '1px solid var(--border-subtle, #2a2a2a)'
                                     }}>
-                                        <Bot size={14} color="#8B5CF6" />
-                                        <span style={{ fontSize: '11px', fontWeight: 600, color: '#8B5CF6' }}>
+                                        <Bot size={14} color="#9B7DF0" />
+                                        <span style={{ fontSize: '11px', fontWeight: 600, color: '#9B7DF0' }}>
                                             Sales Co-Pilot
                                         </span>
                                         {msg.source && msg.source !== 'fallback' && (
                                             <span style={{
                                                 fontSize: '9px', padding: '1px 6px', borderRadius: '4px',
-                                                background: 'rgba(139,92,246,0.15)', color: '#C084FC', fontWeight: 600
+                                                background: 'rgba(128, 91, 231,0.15)', color: '#C084FC', fontWeight: 600
                                             }}>
                                                 {msg.source === 'sales-copilot' ? 'MicroMind' : msg.source}
                                             </span>
@@ -357,16 +357,16 @@ I can help you with:
                         }}>
                             <div style={{
                                 maxWidth: '85%', padding: '16px 20px', borderRadius: '16px',
-                                background: 'var(--bg-surface, #1C1C1C)',
+                                background: 'var(--bg-surface, #1E2025)',
                                 border: '1px solid var(--border-subtle, #2a2a2a)',
-                                color: 'var(--text-primary, #F2F3EC)', fontSize: '14px'
+                                color: 'var(--text-primary, #F5F6FA)', fontSize: '14px'
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                    <Bot size={14} color="#8B5CF6" />
-                                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#8B5CF6' }}>Sales Co-Pilot</span>
+                                    <Bot size={14} color="#9B7DF0" />
+                                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#9B7DF0' }}>Sales Co-Pilot</span>
                                 </div>
                                 <div style={{ display: 'flex', gap: '4px' }}>
-                                    <Loader2 className="spin" size={16} color="#6366F1" />
+                                    <Loader2 className="spin" size={16} color="#805BE7" />
                                     <span style={{ color: 'var(--text-muted, #888)' }}>Thinking...</span>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@ I can help you with:
                 {/* Input Area */}
                 <div style={{
                     padding: '16px 24px', borderTop: '1px solid var(--border-subtle, #2a2a2a)',
-                    background: 'var(--bg-surface, #1C1C1C)'
+                    background: 'var(--bg-surface, #1E2025)'
                 }}>
                     <div style={{ display: 'flex', gap: '10px', maxWidth: '800px', margin: '0 auto' }}>
                         <div style={{ flex: 1, position: 'relative' }}>
@@ -391,7 +391,7 @@ I can help you with:
                                     style={{
                                         width: '100%', padding: '12px 16px', borderRadius: '12px',
                                         border: '1px solid var(--border-subtle, #333)',
-                                        background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F2F3EC)',
+                                        background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F5F6FA)',
                                         fontSize: '14px', outline: 'none', boxSizing: 'border-box'
                                     }}
                                 />
@@ -404,8 +404,8 @@ I can help you with:
                             style={{
                                 padding: '12px 24px', borderRadius: '12px', border: 'none',
                                 background: loading || !input.trim()
-                                    ? 'rgba(99,102,241,0.4)'
-                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                    ? 'rgba(128, 91, 231,0.4)'
+                                    : 'var(--brand-gradient)',
                                 color: '#fff', fontSize: '14px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                                 minWidth: '100px', transition: 'opacity 0.2s'

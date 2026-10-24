@@ -15,7 +15,7 @@ const AppLayout = () => {
         <div style={{
             display: 'flex',
             minHeight: '100vh',
-            background: 'var(--bg-page, #0F0F0F)',
+            background: 'var(--bg-page, #111214)',
         }}>
             <Sidebar />
             <main style={{

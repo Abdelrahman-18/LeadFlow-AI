@@ -2,29 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MicroMind V4 Executive Gold Skin - Dark Mode (Default) */
+/* LeadFlow Design System - Dark Mode (Default) */
 :root,
 [data-theme="dark"] {
   /* Core Colors - Dark Mode */
-  --bg-page: #0F0F0F;
-  /* Deep Night */
-  --bg-surface: #1C1C1C;
-  /* Carbon */
-  --bg-card: #1C1C1C;
+  --bg-page: #111214;
+  /* Main Background */
+  --bg-sidebar: #0D0E10;
+  /* Sidebar Background */
+  --bg-surface: #1E2025;
+  /* Cards / Surface */
+  --bg-card: #1E2025;
   /* Card background */
-  --bg-input: #0F0F0F;
+  --bg-input: #111214;
   /* Input backgrounds */
-  --bg-hover: #262626;
-  /* Hover state */
+  --bg-hover: #2A2C33;
+  /* Hover Surface */
 
-  --primary: #E0AA3E;
-  /* Executive Gold */
-  --text-main: #F2F3EC;
-  /* Bone White */
-  --text-muted: #888888;
-  /* Tech Grey */
-  --border: #333333;
-  /* Subtle Grey */
+  --primary: #805BE7;
+  /* Primary Action (Purple) */
+  --primary-hover: #6C47D6;
+  /* Primary Action hover (darker purple) */
+  --accent-yellow: #E6B84D;
+  /* Active State (Yellow) */
+  --brand-gradient: linear-gradient(135deg, #805BE7 0%, #5E3FC4 100%);
+  /* Logo / loading gradient (darker purple) */
+  --text-main: #F5F6FA;
+  /* Primary Text */
+  --text-muted: #A9ADB8;
+  /* Secondary Text */
+  --border: #34363E;
+  /* Border */
+  --border-subtle: #34363E;
 
   /* Legacy Map (Mappings to keep existing code working while we refactor) */
   --primary-color: var(--primary);
@@ -70,8 +79,12 @@
   --bg-hover: #F3F4F6;
   /* Light Hover */
 
-  --primary: #E0AA3E;
-  /* Darker Gold for better contrast */
+  --primary: #805BE7;
+  /* Primary Action (Purple) */
+  --primary-hover: #6C47D6;
+  --accent-yellow: #C99A2E;
+  /* Active State (Yellow) - darkened for contrast on white */
+  --brand-gradient: linear-gradient(135deg, #805BE7 0%, #5E3FC4 100%);
   --text-main: #000000;
   /* Pure Black */
   --text-muted: #6B7280;
@@ -167,17 +180,18 @@ h6,
 .btn-primary,
 .btn-primary-blue {
   background-color: var(--primary);
-  color: #000000;
+  color: #FFFFFF;
   font-weight: bold;
   border-radius: 4px;
 }
 
 .btn-primary:hover,
 .btn-primary-blue:hover {
-  background-color: #e0a800;
+  background-color: var(--primary-hover);
   transform: translateY(-1px);
 }
 
+/* Secondary (dark) button - Hover Surface fill, Border outline */
 .btn-secondary {
   background-color: var(--bg-hover);
   border: 1px solid var(--border);
@@ -186,6 +200,12 @@ h6,
 
 .btn-secondary:hover {
   background-color: var(--border);
+  border-color: var(--primary);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .btn-danger {
@@ -206,18 +226,18 @@ h6,
 /* Tables */
 .table-header {
   background-color: var(--bg-hover) !important;
-  color: #FFC107 !important;
-  border-bottom: 1px solid #FFC107 !important;
+  color: var(--accent-yellow) !important;
+  border-bottom: 1px solid var(--accent-yellow) !important;
 }
 
 .table-header th,
 .table-header-cell {
-  color: #FFC107 !important;
+  color: var(--accent-yellow) !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   font-size: 0.75rem !important;
   letter-spacing: 1px !important;
-  border-bottom: 1px solid #FFC107 !important;
+  border-bottom: 1px solid var(--accent-yellow) !important;
 }
 
 .table-row {
@@ -277,7 +297,7 @@ h6,
 }
 
 .leaflet-control-attribution a:hover {
-  color: #E0AA3E !important;
+  color: #E6B84D !important;
   /* Darker gold on hover */
   text-decoration: underline !important;
 }
@@ -309,13 +329,13 @@ h6,
 /* AI Chat User Bubble */
 .ai-user-bubble-gold {
   background-color: transparent !important;
-  border: 1px solid #FFC107 !important;
+  border: 1px solid #E6B84D !important;
   color: var(--text-primary) !important;
 }
 
 /* Dropdown Selection Fix (Polish Step 309) */
 option:checked {
-  background-color: #FFC107 !important;
+  background-color: #E6B84D !important;
   color: #000000 !important;
 }
 
@@ -323,7 +343,7 @@ option:checked {
 .dropdown-item.active,
 .dropdown-item:hover,
 .select__option--is-selected {
-  background-color: #FFC107 !important;
+  background-color: #E6B84D !important;
   color: #000000 !important;
 }
 
@@ -340,7 +360,7 @@ option:checked {
   height: 100vh;
   width: 600px;
   background-color: var(--bg-surface);
-  border-left: 1px solid #FFC107;
+  border-left: 1px solid #E6B84D;
   box-shadow: -10px 0 25px rgba(0, 0, 0, 0.7);
   z-index: 50;
   transform: translateX(100%);

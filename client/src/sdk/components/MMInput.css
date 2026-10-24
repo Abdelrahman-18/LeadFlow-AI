@@ -42,7 +42,7 @@
 .mm-input {
     width: 100%;
     padding: 10px 12px;
-    background: var(--bg-input, #0F0F0F);
+    background: var(--bg-input, #111214);
     border: 1px solid var(--border-color, #333);
     border-radius: 4px;
     color: var(--text-primary, #fff);
@@ -57,8 +57,8 @@
 
 .mm-input:focus {
     outline: none;
-    border-color: var(--primary, #E0AA3E);
-    background: var(--bg-surface, #1C1C1C);
+    border-color: var(--primary, #805BE7);
+    background: var(--bg-surface, #1E2025);
 }
 
 .mm-input:disabled {

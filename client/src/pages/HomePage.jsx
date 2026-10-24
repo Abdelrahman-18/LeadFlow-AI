@@ -2,9 +2,17 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import leadflowService from '../services/leadflowService';
 import {
-    TrendingUp, MessageSquare, DollarSign, Target, Users,
-    AlertCircle, Loader2, Activity, Zap, ArrowRight
+    TrendingUp, MessageSquare, Target, Users,
+    AlertCircle, Loader2, Activity, Zap, ArrowRight, Bot
 } from 'lucide-react';
+
+// Design-system tokens (fallbacks match the dark palette in index.css)
+const SURFACE = 'var(--bg-surface, #1E2025)';
+const BORDER = 'var(--border, #34363E)';
+const TEXT_PRIMARY = 'var(--text-primary, #F5F6FA)';
+const TEXT_SECONDARY = 'var(--text-secondary, #A9ADB8)';
+const PRIMARY = 'var(--primary, #805BE7)';
+const ACCENT_YELLOW = 'var(--accent-yellow, #E6B84D)';
 
 function HomePage() {
     const navigate = useNavigate();
@@ -30,14 +38,32 @@ function HomePage() {
         fetchDashboard();
     }, []);
 
-    const formatCurrency = (val) => `EGP ${(val || 0).toLocaleString()}`;
+    const pendingApprovals = dashboard?.metrics?.pendingApprovals || 0;
 
-    const metricCards = dashboard ? [
-        { label: 'Total Revenue', value: formatCurrency(dashboard.metrics?.totalRevenue), icon: DollarSign, color: '#6366F1', trend: 'Tracked', path: '/opportunities' },
-        { label: 'Active Conversations', value: dashboard.metrics?.activeConversations || 0, icon: MessageSquare, color: '#34D399', trend: `${dashboard.metrics?.activeConversations || 0} active`, path: '/conversations' },
-        { label: 'Hot Leads', value: dashboard.metrics?.hotLeads || 0, icon: Zap, color: '#FBBF24', trend: `${dashboard.metrics?.hotLeads || 0} ready`, path: '/opportunities' },
-        { label: 'Pipeline Value', value: formatCurrency(dashboard.metrics?.potentialRevenue), icon: Target, color: '#8B5CF6', trend: `${dashboard.metrics?.openOpportunities || 0} open`, path: '/opportunities' },
-    ] : [];
+    // Top responsive metric cards grid
+    const summaryCards = [
+        {
+            label: 'Total Conversations',
+            value: (dashboard?.metrics?.totalConversations || 0).toLocaleString(),
+            icon: MessageSquare,
+            path: '/conversations',
+        },
+        {
+            label: 'Revenue Leads',
+            value: (dashboard?.metrics?.totalLeads || 0).toLocaleString(),
+            icon: TrendingUp,
+            path: '/opportunities',
+        },
+        {
+            label: 'AI Actions',
+            value: (dashboard?.metrics?.totalActions || 0).toLocaleString(),
+            icon: Bot,
+            path: '/approvals',
+            note: pendingApprovals > 0
+                ? `${pendingApprovals} pending approval${pendingApprovals !== 1 ? 's' : ''}`
+                : null,
+        },
+    ];
 
     return (
         <div style={{ padding: '24px 32px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -45,80 +71,61 @@ function HomePage() {
             <div style={{ marginBottom: '28px' }}>
                 <h1 style={{
                     fontSize: '26px', fontWeight: 700, margin: '0 0 6px 0',
-                    color: 'var(--text-primary, #F2F3EC)'
+                    color: TEXT_PRIMARY
                 }}>
                     Welcome back{user ? `, ${user.displayName || user.name}` : ''}
                 </h1>
-                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-muted, #888)' }}>
+                <p style={{ margin: 0, fontSize: '14px', color: TEXT_SECONDARY }}>
                     Here's your revenue operations overview
                 </p>
             </div>
 
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-                    <Loader2 className="spin" size={32} style={{ color: '#6366F1' }} />
+                    <Loader2 className="spin" size={32} style={{ color: PRIMARY }} />
                 </div>
             ) : (
                 <>
-                    {/* Metric Cards */}
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                        gap: '16px', marginBottom: '28px'
-                    }}>
-                        {metricCards.map((card, idx) => {
+                    {/* Top Dashboard Metric Cards */}
+                    <div className="lf-summary-grid">
+                        {summaryCards.map((card) => {
                             const Icon = card.icon;
                             return (
-                                <div
-                                    key={idx}
+                                <button
+                                    key={card.label}
+                                    type="button"
+                                    className="lf-summary-card"
                                     onClick={() => navigate(card.path)}
-                                    style={{
-                                        padding: '22px', borderRadius: '14px',
-                                        background: 'var(--bg-surface, #1C1C1C)',
-                                        border: '1px solid var(--border-subtle, #2a2a2a)',
-                                        cursor: 'pointer', transition: 'all 0.2s',
-                                        position: 'relative', overflow: 'hidden'
-                                    }}
-                                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle, #2a2a2a)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                 >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                                        <div style={{
-                                            width: '42px', height: '42px', borderRadius: '12px',
-                                            background: `${card.color}18`,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                        }}>
-                                            <Icon size={20} style={{ color: card.color }} />
-                                        </div>
-                                        <ArrowRight size={14} style={{ color: 'var(--text-muted, #444)' }} />
+                                    <div className="lf-summary-icon">
+                                        <Icon size={20} style={{ color: ACCENT_YELLOW }} />
                                     </div>
-                                    <div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)', marginBottom: '4px' }}>
-                                        {card.value}
+                                    <div style={{ minWidth: 0 }}>
+                                        <div className="lf-summary-value">{card.value}</div>
+                                        <div className="lf-summary-label">{card.label}</div>
+                                        {card.note && (
+                                            <div className="lf-summary-note">
+                                                <AlertCircle size={12} />
+                                                {card.note}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '13px', color: 'var(--text-muted, #888)' }}>
-                                            {card.label}
-                                        </span>
-                                        <span style={{ fontSize: '11px', color: card.color, fontWeight: 600 }}>
-                                            {card.trend}
-                                        </span>
-                                    </div>
-                                </div>
+                                </button>
                             );
                         })}
                     </div>
 
                     {/* Recent Activity + Quick Actions */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div className="lf-dashboard-panels">
                         {/* Recent Activity */}
                         <div style={{
                             padding: '22px', borderRadius: '14px',
-                            background: 'var(--bg-surface, #1C1C1C)',
-                            border: '1px solid var(--border-subtle, #2a2a2a)'
+                            background: SURFACE,
+                            border: `1px solid ${BORDER}`
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                                <Activity size={16} style={{ color: '#6366F1' }} />
-                                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                                <Activity size={16} style={{ color: PRIMARY }} />
+                                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: TEXT_PRIMARY }}>
                                     Recent Activity
                                 </h3>
                             </div>
@@ -128,39 +135,39 @@ function HomePage() {
                                         <div key={activity.id || idx} style={{
                                             display: 'flex', gap: '10px', alignItems: 'flex-start',
                                             padding: '10px 12px', borderRadius: '8px',
-                                            background: 'rgba(255,255,255,0.02)',
+                                            background: 'transparent',
                                             cursor: 'pointer', transition: 'background 0.15s'
                                         }}
                                             onClick={() => navigate('/conversations')}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                         >
                                             <div style={{
                                                 width: '30px', height: '30px', borderRadius: '8px', minWidth: '30px',
                                                 background: activity.avatarUrl
                                                     ? `url(${activity.avatarUrl}) center/cover`
-                                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                                    : 'var(--brand-gradient, #805BE7)',
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 color: '#fff', fontWeight: 700, fontSize: '11px'
                                             }}>
                                                 {!activity.avatarUrl && (activity.customerName?.charAt(0) || '?')}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '2px' }}>
+                                                <div style={{ fontSize: '12px', fontWeight: 600, color: TEXT_PRIMARY, marginBottom: '2px' }}>
                                                     {activity.customerName || 'Unknown'}
                                                 </div>
-                                                <div style={{ fontSize: '11px', color: 'var(--text-muted, #888)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                <div style={{ fontSize: '11px', color: TEXT_SECONDARY, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                     {activity.message || ''}
                                                 </div>
                                             </div>
-                                            <span style={{ fontSize: '10px', color: 'var(--text-muted, #555)', whiteSpace: 'nowrap' }}>
+                                            <span style={{ fontSize: '10px', color: TEXT_SECONDARY, whiteSpace: 'nowrap' }}>
                                                 {activity.time ? new Date(activity.time).toLocaleDateString() : ''}
                                             </span>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div style={{ padding: '30px 0', textAlign: 'center', color: 'var(--text-muted, #555)', fontSize: '13px' }}>
+                                <div style={{ padding: '30px 0', textAlign: 'center', color: TEXT_SECONDARY, fontSize: '13px' }}>
                                     No recent activity
                                 </div>
                             )}
@@ -169,12 +176,12 @@ function HomePage() {
                         {/* Quick Actions */}
                         <div style={{
                             padding: '22px', borderRadius: '14px',
-                            background: 'var(--bg-surface, #1C1C1C)',
-                            border: '1px solid var(--border-subtle, #2a2a2a)'
+                            background: SURFACE,
+                            border: `1px solid ${BORDER}`
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                                <Zap size={16} style={{ color: '#FBBF24' }} />
-                                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                                <Zap size={16} style={{ color: ACCENT_YELLOW }} />
+                                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: TEXT_PRIMARY }}>
                                     Quick Actions
                                 </h3>
                             </div>
@@ -187,67 +194,133 @@ function HomePage() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Bottom Summary */}
-                    <div style={{
-                        marginTop: '20px', padding: '16px 22px', borderRadius: '12px',
-                        background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.04))',
-                        border: '1px solid rgba(99,102,241,0.15)',
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        fontSize: '13px', color: 'var(--text-muted, #888)'
-                    }}>
-                        <span>
-                            <strong style={{ color: 'var(--text-primary, #F2F3EC)' }}>
-                                {dashboard?.metrics?.totalConversations || 0}
-                            </strong> total conversations ·
-                            <strong style={{ color: 'var(--text-primary, #F2F3EC)' }}> {dashboard?.metrics?.totalLeads || 0}</strong> leads ·
-                            <strong style={{ color: 'var(--text-primary, #F2F3EC)' }}> {dashboard?.metrics?.totalActions || 0}</strong> AI actions
-                        </span>
-                        <span>
-                            {dashboard?.metrics?.pendingApprovals > 0 && (
-                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#FBBF24' }}>
-                                    <AlertCircle size={12} />
-                                    {dashboard.metrics.pendingApprovals} pending approval{dashboard.metrics.pendingApprovals !== 1 ? 's' : ''}
-                                </span>
-                            )}
-                        </span>
-                    </div>
                 </>
             )}
 
             <style>{`
                 @keyframes lf-spin { to { transform: rotate(360deg); } }
                 .spin { animation: lf-spin 1s linear infinite; }
+
+                .lf-summary-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 16px;
+                    margin-bottom: 24px;
+                }
+                .lf-summary-card {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    padding: 20px 22px;
+                    border-radius: 14px;
+                    background: ${SURFACE};
+                    border: 1px solid ${BORDER};
+                    cursor: pointer;
+                    text-align: left;
+                    font: inherit;
+                    transition: border-color 0.2s, transform 0.2s;
+                }
+                .lf-summary-card:hover {
+                    border-color: ${PRIMARY};
+                    transform: translateY(-2px);
+                }
+                .lf-summary-card:focus-visible {
+                    outline: 2px solid ${PRIMARY};
+                    outline-offset: 2px;
+                }
+                .lf-summary-icon {
+                    width: 44px;
+                    height: 44px;
+                    min-width: 44px;
+                    border-radius: 12px;
+                    background: rgba(230, 184, 77, 0.12);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .lf-summary-value {
+                    font-size: 26px;
+                    font-weight: 700;
+                    line-height: 1.15;
+                    color: ${TEXT_PRIMARY};
+                }
+                .lf-summary-label {
+                    margin-top: 2px;
+                    font-size: 13px;
+                    color: ${TEXT_SECONDARY};
+                }
+                .lf-summary-note {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    margin-top: 6px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: ${ACCENT_YELLOW};
+                }
+
+                .lf-dashboard-panels {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                }
+
+                .lf-quick-action {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    width: 100%;
+                    padding: 10px 12px;
+                    border-radius: 10px;
+                    font-size: 13px;
+                    font-weight: 500;
+                    text-align: left;
+                    cursor: pointer;
+                    transition: background-color 0.15s, border-color 0.15s;
+                }
+                .lf-quick-action-icon {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 8px;
+                    background: rgba(128, 91, 231, 0.15);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .lf-quick-action-arrow {
+                    color: ${TEXT_SECONDARY};
+                    transition: color 0.15s, transform 0.15s;
+                }
+                .lf-quick-action:hover .lf-quick-action-arrow {
+                    color: ${TEXT_PRIMARY};
+                    transform: translateX(2px);
+                }
+
+                @media (max-width: 900px) {
+                    .lf-summary-grid { grid-template-columns: 1fr; }
+                    .lf-dashboard-panels { grid-template-columns: 1fr; }
+                }
+                @media (min-width: 901px) and (max-width: 1100px) {
+                    .lf-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                }
             `}</style>
         </div>
     );
 }
 
+// Quick Action row - uses the design system's dark "Secondary" button style
 function ActionButton({ icon: Icon, label, path, onClick }) {
     return (
         <button
+            type="button"
+            className="btn-secondary lf-quick-action"
             onClick={() => onClick(path)}
-            style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                padding: '11px 14px', borderRadius: '10px', border: 'none',
-                background: 'rgba(255,255,255,0.03)',
-                color: 'var(--text-primary, #F2F3EC)',
-                fontSize: '13px', fontWeight: 500, cursor: 'pointer',
-                textAlign: 'left', transition: 'all 0.15s',
-                width: '100%'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
         >
-            <div style={{
-                width: '32px', height: '32px', borderRadius: '8px',
-                background: 'rgba(99,102,241,0.12)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-                <Icon size={14} style={{ color: '#818CF8' }} />
+            <div className="lf-quick-action-icon">
+                <Icon size={14} style={{ color: PRIMARY }} />
             </div>
             <span style={{ flex: 1 }}>{label}</span>
-            <ArrowRight size={14} style={{ color: 'var(--text-muted, #555)' }} />
+            <ArrowRight size={14} className="lf-quick-action-arrow" />
         </button>
     );
 }

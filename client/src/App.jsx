@@ -30,8 +30,8 @@ const LoadingFallback = () => (
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--bg-page, #0F0F0F)',
-        color: 'var(--text-primary, #F2F3EC)',
+        background: 'var(--bg-page, #111214)',
+        color: 'var(--text-primary, #F5F6FA)',
     }}>
         <div style={{ textAlign: 'center' }}>
             {/* Spinner ring + pulsing logo */}
@@ -46,8 +46,8 @@ const LoadingFallback = () => (
                     position: 'absolute',
                     inset: 0,
                     borderRadius: '50%',
-                    border: '3px solid rgba(99,102,241,0.15)',
-                    borderTopColor: '#6366F1',
+                    border: '3px solid rgba(128,91,231,0.15)',
+                    borderTopColor: '#805BE7',
                     animation: 'lf-spin 1s linear infinite',
                 }} />
                 {/* Logo in center */}
@@ -59,7 +59,7 @@ const LoadingFallback = () => (
                     width: '40px',
                     height: '40px',
                     borderRadius: '12px',
-                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                    background: 'var(--brand-gradient, linear-gradient(135deg, #805BE7 0%, #5E3FC4 100%))',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -77,7 +77,7 @@ const LoadingFallback = () => (
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                background: 'linear-gradient(135deg, #9B7DF0, #805BE7)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '6px',
@@ -86,7 +86,7 @@ const LoadingFallback = () => (
                 fontSize: '0.7rem',
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
-                color: '#555',
+                color: 'var(--text-secondary, #A9ADB8)',
             }}>Revenue Operations</div>
         </div>
         {/* Keyframe animations injected via style tag */}

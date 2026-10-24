@@ -28,7 +28,7 @@ const CustomSelect = ({ value, onChange, options, placeholder = 'Select...', ico
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     backgroundColor: 'var(--bg-surface)',
-                    border: isOpen ? '1px solid #FFC107' : '1px solid var(--border)',
+                    border: isOpen ? '1px solid #E6B84D' : '1px solid var(--border)',
                     borderRadius: '4px',
                     padding: '0.625rem 1rem', // Matching standard input padding
                     display: 'flex',
@@ -41,7 +41,7 @@ const CustomSelect = ({ value, onChange, options, placeholder = 'Select...', ico
                 }}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                    {Icon && <Icon size={16} color="#FFC107" />}
+                    {Icon && <Icon size={16} color="#E6B84D" />}
                     <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {selectedOption ? selectedOption.label : placeholder}
                     </span>
@@ -85,12 +85,12 @@ const CustomSelect = ({ value, onChange, options, placeholder = 'Select...', ico
                             key={option.value}
                             onClick={() => handleSelect(option.value)}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#FFC107';
+                                e.currentTarget.style.backgroundColor = '#E6B84D';
                                 e.currentTarget.style.color = '#000000';
                             }}
                             onMouseLeave={(e) => {
                                 const currentTheme = document.documentElement.getAttribute('data-theme');
-                                const selectedBg = currentTheme === 'light' ? '#F3F4F6' : '#333333';
+                                const selectedBg = currentTheme === 'light' ? '#F3F4F6' : '#34363E';
                                 e.currentTarget.style.backgroundColor = option.value === value ? selectedBg : 'transparent';
                                 e.currentTarget.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
                             }}
@@ -99,7 +99,7 @@ const CustomSelect = ({ value, onChange, options, placeholder = 'Select...', ico
                                 cursor: 'pointer',
                                 fontSize: '0.9rem',
                                 color: 'var(--text-primary)',
-                                backgroundColor: option.value === value ? (document.documentElement.getAttribute('data-theme') === 'light' ? '#F3F4F6' : '#333333') : 'transparent',
+                                backgroundColor: option.value === value ? (document.documentElement.getAttribute('data-theme') === 'light' ? '#F3F4F6' : '#34363E') : 'transparent',
                                 transition: 'background-color 0.1s'
                             }}
                         >

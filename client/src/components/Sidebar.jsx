@@ -94,7 +94,7 @@ const Sidebar = () => {
                         width: '36px',
                         height: '36px',
                         borderRadius: '10px',
-                        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                        background: 'var(--brand-gradient)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -198,7 +198,8 @@ const Sidebar = () => {
                 <div className="user-plate">
                     <div className="user-info">
                         <div className="user-avatar" style={{
-                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            background: 'var(--brand-gradient)',
+                            border: 'none',
                             color: '#fff',
                             fontWeight: '700'
                         }}>

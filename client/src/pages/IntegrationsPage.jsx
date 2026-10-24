@@ -52,8 +52,8 @@ const INTEGRATIONS = [
         name: 'MicroMind Core AI',
         description: 'Advanced AI orchestration engine powering analytics, lead scoring, and automation.',
         icon: Bot,
-        color: '#6366F1',
-        bgGradient: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+        color: '#805BE7',
+        bgGradient: 'var(--brand-gradient)',
         connected: true,
         category: 'ai',
         status: 'Active',
@@ -105,12 +105,12 @@ function IntegrationsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                 <div style={{
                     width: '32px', height: '32px', borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                    background: 'var(--brand-gradient)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                     <Puzzle size={16} color="#fff" />
                 </div>
-                <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                     Integrations
                 </h1>
             </div>
@@ -128,7 +128,7 @@ function IntegrationsPage() {
                             padding: '7px 18px', borderRadius: '16px', border: 'none',
                             fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                             background: categoryFilter === cat.id
-                                ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+                                ? 'var(--brand-gradient)'
                                 : 'rgba(255,255,255,0.06)',
                             color: categoryFilter === cat.id ? '#fff' : 'var(--text-muted, #888)',
                             transition: 'all 0.2s'
@@ -146,15 +146,15 @@ function IntegrationsPage() {
                     return (
                         <div key={integration.id} style={{
                             padding: '24px', borderRadius: '14px',
-                            background: 'var(--bg-surface, #1C1C1C)',
+                            background: 'var(--bg-surface, #1E2025)',
                             border: integration.connected
-                                ? '1px solid rgba(99,102,241,0.3)'
+                                ? '1px solid rgba(128, 91, 231,0.3)'
                                 : '1px solid var(--border-subtle, #2a2a2a)',
                             transition: 'all 0.25s',
                             position: 'relative', overflow: 'hidden'
                         }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = integration.connected ? 'rgba(99,102,241,0.5)' : '#444'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = integration.connected ? 'rgba(99,102,241,0.3)' : 'var(--border-subtle, #2a2a2a)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = integration.connected ? 'rgba(128, 91, 231,0.5)' : '#444'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = integration.connected ? 'rgba(128, 91, 231,0.3)' : 'var(--border-subtle, #2a2a2a)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             {/* Status indicator dot */}
                             {integration.connected && (
@@ -179,7 +179,7 @@ function IntegrationsPage() {
                             </div>
 
                             {/* Name + Description */}
-                            <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)', paddingRight: integration.connected ? '80px' : 0 }}>
+                            <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)', paddingRight: integration.connected ? '80px' : 0 }}>
                                 {integration.name}
                             </h3>
                             <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: 'var(--text-muted, #888)', lineHeight: 1.5 }}>
@@ -194,9 +194,9 @@ function IntegrationsPage() {
                                     style={{
                                         padding: '9px 20px', borderRadius: '10px', border: 'none',
                                         background: connecting === integration.id
-                                            ? 'rgba(99,102,241,0.3)'
+                                            ? 'rgba(128, 91, 231,0.3)'
                                             : integration.connected
-                                                ? 'rgba(239,68,68,0.1)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                                ? 'rgba(239,68,68,0.1)' : 'var(--brand-gradient)',
                                         color: connecting === integration.id
                                             ? '#fff'
                                             : integration.connected ? '#EF4444' : '#fff',

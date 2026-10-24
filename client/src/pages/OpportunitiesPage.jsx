@@ -4,7 +4,7 @@ import leadflowService from '../services/leadflowService';
 import { TrendingUp, Search, Filter, DollarSign, Target, Users, Zap, Loader2, ChevronDown, BarChart3 } from 'lucide-react';
 
 const STAGE_COLORS = {
-    OPEN: { bg: 'rgba(99,102,241,0.12)', text: '#818CF8', label: 'Open' },
+    OPEN: { bg: 'rgba(128, 91, 231,0.12)', text: '#9B7DF0', label: 'Open' },
     IN_PROGRESS: { bg: 'rgba(251,191,36,0.12)', text: '#FBBF24', label: 'In Progress' },
     WON: { bg: 'rgba(52,211,153,0.12)', text: '#34D399', label: 'Won' },
     LOST: { bg: 'rgba(239,68,68,0.12)', text: '#EF4444', label: 'Lost' },
@@ -56,12 +56,12 @@ function OpportunitiesPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                         <div style={{
                             width: '32px', height: '32px', borderRadius: '8px',
-                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            background: 'var(--brand-gradient)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             <TrendingUp size={16} color="#fff" />
                         </div>
-                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Revenue Opportunities
                         </h1>
                     </div>
@@ -78,13 +78,13 @@ function OpportunitiesPage() {
             }}>
                 <div style={{
                     padding: '20px', borderRadius: '12px',
-                    background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05))',
-                    border: '1px solid rgba(99,102,241,0.2)'
+                    background: 'linear-gradient(135deg, rgba(128, 91, 231,0.1), rgba(128, 91, 231,0.05))',
+                    border: '1px solid rgba(128, 91, 231,0.2)'
                 }}>
-                    <div style={{ fontSize: '12px', color: '#818CF8', fontWeight: 600, marginBottom: '6px' }}>
+                    <div style={{ fontSize: '12px', color: '#9B7DF0', fontWeight: 600, marginBottom: '6px' }}>
                         Pipeline Value
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                         {formatCurrency(summary.totalPotentialRevenue)}
                     </div>
                 </div>
@@ -95,7 +95,7 @@ function OpportunitiesPage() {
                     <div style={{ fontSize: '12px', color: '#34D399', fontWeight: 600, marginBottom: '6px' }}>
                         Open Opportunities
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                         {summary.openCount}
                     </div>
                 </div>
@@ -106,7 +106,7 @@ function OpportunitiesPage() {
                     <div style={{ fontSize: '12px', color: '#FBBF24', fontWeight: 600, marginBottom: '6px' }}>
                         Total Opportunities
                     </div>
-                    <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                         {opportunities.length}
                     </div>
                 </div>
@@ -122,7 +122,7 @@ function OpportunitiesPage() {
                             padding: '6px 16px', borderRadius: '16px', border: 'none',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                             background: stageFilter === stage
-                                ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+                                ? 'var(--brand-gradient)'
                                 : 'rgba(255,255,255,0.06)',
                             color: stageFilter === stage ? '#fff' : 'var(--text-muted, #888)',
                             transition: 'all 0.2s'
@@ -148,7 +148,7 @@ function OpportunitiesPage() {
                         width: '100%', padding: '10px 14px 10px 40px',
                         borderRadius: '10px', border: '1px solid var(--border-subtle, #333)',
                         background: 'var(--bg-input, #262626)',
-                        color: 'var(--text-primary, #F2F3EC)', fontSize: '13px',
+                        color: 'var(--text-primary, #F5F6FA)', fontSize: '13px',
                         outline: 'none', boxSizing: 'border-box'
                     }}
                 />
@@ -157,12 +157,12 @@ function OpportunitiesPage() {
             {/* Table */}
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                    <Loader2 className="spin" size={28} style={{ color: '#6366F1' }} />
+                    <Loader2 className="spin" size={28} style={{ color: '#805BE7' }} />
                 </div>
             ) : filtered.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-muted, #555)' }}>
                     <Target size={48} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                    <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '4px' }}>
                         No opportunities found
                     </div>
                     <div style={{ fontSize: '13px' }}>
@@ -173,7 +173,7 @@ function OpportunitiesPage() {
                 <div style={{
                     borderRadius: '12px', overflow: 'hidden',
                     border: '1px solid var(--border-subtle, #2a2a2a)',
-                    background: 'var(--bg-surface, #1C1C1C)'
+                    background: 'var(--bg-surface, #1E2025)'
                 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                         <thead>
@@ -193,7 +193,7 @@ function OpportunitiesPage() {
                                     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                 >
                                     <td style={{ padding: '16px 20px' }}>
-                                        <div style={{ fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                                        <div style={{ fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                                             {opp.name || 'Unnamed Opportunity'}
                                         </div>
                                     </td>
@@ -203,14 +203,14 @@ function OpportunitiesPage() {
                                                 width: '32px', height: '32px', borderRadius: '8px',
                                                 background: opp.lead?.customer?.avatarUrl
                                                     ? `url(${opp.lead.customer.avatarUrl}) center/cover`
-                                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                                    : 'var(--brand-gradient)',
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 color: '#fff', fontWeight: 700, fontSize: '12px'
                                             }}>
                                                 {!opp.lead?.customer?.avatarUrl && (opp.lead?.customer?.name?.charAt(0) || '?')}
                                             </div>
                                             <div>
-                                                <div style={{ fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', fontSize: '13px' }}>
+                                                <div style={{ fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', fontSize: '13px' }}>
                                                     {opp.lead?.customer?.name || 'Unknown'}
                                                 </div>
                                                 <div style={{ fontSize: '11px', color: 'var(--text-muted, #888)' }}>
@@ -229,7 +229,7 @@ function OpportunitiesPage() {
                                             {STAGE_COLORS[opp.status]?.label || opp.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                                    <td style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                                         {formatCurrency(opp.potentialRevenue)}
                                     </td>
                                     <td style={{ padding: '16px 20px', textAlign: 'right' }}>

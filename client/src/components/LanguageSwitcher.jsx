@@ -57,13 +57,13 @@ export default function LanguageSwitcher() {
                     justifyContent: 'space-between',
                     padding: '8px 12px',
                     borderRadius: '6px',
-                    backgroundColor: isOpen ? 'rgba(224, 170, 62, 0.12)' : 'transparent',
+                    backgroundColor: isOpen ? 'rgba(230, 184, 77, 0.12)' : 'transparent',
                     border: '1px solid var(--border-subtle)',
-                    color: isOpen ? '#E0AA3E' : 'var(--text-secondary)'
+                    color: isOpen ? '#E6B84D' : 'var(--text-secondary)'
                 }}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Globe size={16} style={{ color: isOpen ? '#E0AA3E' : 'var(--text-muted)' }} />
+                    <Globe size={16} style={{ color: isOpen ? '#E6B84D' : 'var(--text-muted)' }} />
                     <span style={{ fontSize: '13px', fontWeight: '500' }}>{currentLang.name}</span>
                 </div>
                 <ChevronUp
@@ -101,10 +101,10 @@ export default function LanguageSwitcher() {
                                     justifyContent: 'space-between',
                                     width: '100%',
                                     padding: '10px 12px',
-                                    background: lang.code === i18n.language ? 'rgba(224, 170, 62, 0.1)' : 'transparent',
+                                    background: lang.code === i18n.language ? 'rgba(230, 184, 77, 0.1)' : 'transparent',
                                     border: 'none',
                                     borderRadius: '4px',
-                                    color: lang.code === i18n.language ? '#E0AA3E' : 'var(--text-primary)',
+                                    color: lang.code === i18n.language ? '#E6B84D' : 'var(--text-primary)',
                                     fontSize: '13px',
                                     fontWeight: lang.code === i18n.language ? '600' : '400',
                                     cursor: 'pointer',
@@ -124,7 +124,7 @@ export default function LanguageSwitcher() {
                             >
                                 <span>{lang.name}</span>
                                 {lang.code === i18n.language && (
-                                    <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#E0AA3E' }} />
+                                    <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#E6B84D' }} />
                                 )}
                             </button>
                         ))}

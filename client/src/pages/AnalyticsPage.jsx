@@ -55,20 +55,20 @@ function AnalyticsPage() {
 
         return (
             <div style={{ marginTop: '24px', padding: '20px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle, #2a2a2a)' }}>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '16px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '16px' }}>
                     {chartData.title || 'Chart'}
                 </div>
 
                 {chartData.type === 'pie' ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center' }}>
                         {chartData.labels.map((label, i) => {
-                            const colors = ['#6366F1', '#34D399', '#FBBF24', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#F97316'];
+                            const colors = ['#805BE7', '#34D399', '#FBBF24', '#EF4444', '#9B7DF0', '#EC4899', '#06B6D4', '#F97316'];
                             const total = chartData.values.reduce((s, v) => s + v, 0);
                             const pct = total > 0 ? Math.round((chartData.values[i] / total) * 100) : 0;
                             return (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: colors[i % colors.length] }} />
-                                    <span style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>{label}: <strong style={{ color: 'var(--text-primary, #F2F3EC)' }}>{pct}%</strong></span>
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>{label}: <strong style={{ color: 'var(--text-primary, #F5F6FA)' }}>{pct}%</strong></span>
                                 </div>
                             );
                         })}
@@ -84,7 +84,7 @@ function AnalyticsPage() {
                                     </span>
                                     <div style={{
                                         width: '100%', height: `${h}px`, borderRadius: '4px 4px 0 0',
-                                        background: `linear-gradient(180deg, #6366F1, #8B5CF6)`,
+                                        background: `linear-gradient(180deg, #805BE7, #9B7DF0)`,
                                         opacity: 0.7 + (i / chartData.labels.length) * 0.3,
                                         transition: 'height 0.5s ease',
                                         minHeight: '4px'
@@ -107,12 +107,12 @@ function AnalyticsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                 <div style={{
                     width: '32px', height: '32px', borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                    background: 'var(--brand-gradient)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                     <Brain size={16} color="#fff" />
                 </div>
-                <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                     AI Analytics
                 </h1>
             </div>
@@ -123,10 +123,10 @@ function AnalyticsPage() {
             {/* Input Area */}
             <div style={{
                 borderRadius: '16px', border: '2px solid var(--border-subtle, #333)',
-                background: 'var(--bg-surface, #1C1C1C)', padding: '6px',
+                background: 'var(--bg-surface, #1E2025)', padding: '6px',
                 transition: 'border-color 0.2s', marginBottom: '24px'
             }}
-                onFocusCapture={(e) => e.currentTarget.style.borderColor = '#6366F1'}
+                onFocusCapture={(e) => e.currentTarget.style.borderColor = '#805BE7'}
                 onBlurCapture={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle, #333)'}
             >
                 <textarea
@@ -138,7 +138,7 @@ function AnalyticsPage() {
                     rows={2}
                     style={{
                         width: '100%', padding: '12px 16px', border: 'none',
-                        background: 'transparent', color: 'var(--text-primary, #F2F3EC)',
+                        background: 'transparent', color: 'var(--text-primary, #F5F6FA)',
                         fontSize: '14px', resize: 'none', outline: 'none',
                         fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box'
                     }}
@@ -153,7 +153,7 @@ function AnalyticsPage() {
                         style={{
                             padding: '8px 20px', borderRadius: '10px', border: 'none',
                             background: !question.trim() || loading
-                                ? 'rgba(99,102,241,0.3)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                ? 'rgba(128, 91, 231,0.3)' : 'var(--brand-gradient)',
                             color: '#fff', fontSize: '13px', fontWeight: 600,
                             cursor: !question.trim() || loading ? 'not-allowed' : 'pointer',
                             display: 'flex', alignItems: 'center', gap: '8px',
@@ -188,12 +188,12 @@ function AnalyticsPage() {
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     padding: '8px 14px', borderRadius: '10px',
                                     border: '1px solid var(--border-subtle, #333)',
-                                    background: 'var(--bg-surface, #1C1C1C)',
+                                    background: 'var(--bg-surface, #1E2025)',
                                     color: 'var(--text-muted, #888)',
                                     fontSize: '12px', cursor: 'pointer',
                                     transition: 'all 0.2s'
                                 }}
-                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = 'var(--text-primary, #F2F3EC)'; }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#805BE7'; e.currentTarget.style.color = 'var(--text-primary, #F5F6FA)'; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle, #333)'; e.currentTarget.style.color = 'var(--text-muted, #888)'; }}
                             >
                                 <Icon size={14} />
@@ -208,12 +208,12 @@ function AnalyticsPage() {
             {response && (
                 <div style={{
                     borderRadius: '16px', padding: '24px',
-                    background: 'var(--bg-surface, #1C1C1C)',
+                    background: 'var(--bg-surface, #1E2025)',
                     border: '1px solid var(--border-subtle, #2a2a2a)'
                 }}>
                     {response.chartData && renderChart(response.chartData)}
                     <div style={{
-                        fontSize: '14px', lineHeight: 1.7, color: 'var(--text-primary, #F2F3EC)',
+                        fontSize: '14px', lineHeight: 1.7, color: 'var(--text-primary, #F5F6FA)',
                         whiteSpace: 'pre-wrap', marginTop: response.chartData ? '20px' : 0
                     }}>
                         {response.text || 'No response available.'}
@@ -229,7 +229,7 @@ function AnalyticsPage() {
             {/* History */}
             {history.length > 1 && (
                 <div style={{ marginTop: '32px' }}>
-                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <MessageSquare size={16} />
                         Conversation History
                     </h3>
@@ -237,11 +237,11 @@ function AnalyticsPage() {
                         {history.slice(0, -1).reverse().map((entry, idx) => (
                             <div key={idx} style={{
                                 padding: '12px 16px', borderRadius: '10px',
-                                background: 'var(--bg-surface, #1C1C1C)',
+                                background: 'var(--bg-surface, #1E2025)',
                                 border: '1px solid var(--border-subtle, #2a2a2a)',
                                 fontSize: '13px'
                             }}>
-                                <div style={{ color: '#818CF8', fontWeight: 600, marginBottom: '4px' }}>
+                                <div style={{ color: '#9B7DF0', fontWeight: 600, marginBottom: '4px' }}>
                                     Q: {entry.question}
                                 </div>
                                 <div style={{ color: 'var(--text-muted, #888)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

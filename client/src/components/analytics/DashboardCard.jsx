@@ -10,7 +10,7 @@ const DashboardCard = ({ dashboard, onDelete }) => {
 
     return (
         <div style={{
-            background: 'var(--bg-component, #1C1C1C)',
+            background: 'var(--bg-component, #1E2025)',
             border: '1px solid var(--border-subtle, #333)',
             borderRadius: '12px',
             padding: '20px',
@@ -18,8 +18,8 @@ const DashboardCard = ({ dashboard, onDelete }) => {
             position: 'relative',
         }}
             onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#E0AA3E';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(224, 170, 62, 0.1)';
+                e.currentTarget.style.borderColor = '#E6B84D';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(230, 184, 77, 0.1)';
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = 'var(--border-subtle, #333)';
@@ -28,8 +28,8 @@ const DashboardCard = ({ dashboard, onDelete }) => {
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
-                    <BarChart3 size={20} style={{ color: '#E0AA3E', flexShrink: 0 }} />
-                    <h3 style={{ color: 'var(--text-primary, #F2F3EC)', fontSize: '1rem', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <BarChart3 size={20} style={{ color: '#E6B84D', flexShrink: 0 }} />
+                    <h3 style={{ color: 'var(--text-primary, #F5F6FA)', fontSize: '1rem', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {dashboard?.title || t('dashboardsPage.empty.title')}
                     </h3>
                 </div>

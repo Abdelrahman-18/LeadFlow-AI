@@ -5,7 +5,7 @@ import { User, Mail, Globe, Moon, Sun, Bell, Shield, Key, ArrowLeft, Save } from
 const SectionCard = ({ icon: Icon, title, children }) => (
     <div style={{
         padding: '24px', borderRadius: '14px', marginBottom: '16px',
-        background: 'var(--bg-surface, #1C1C1C)',
+        background: 'var(--bg-surface, #1E2025)',
         border: '1px solid var(--border-subtle, #2a2a2a)'
     }}>
         <div style={{
@@ -15,12 +15,12 @@ const SectionCard = ({ icon: Icon, title, children }) => (
         }}>
             <div style={{
                 width: '32px', height: '32px', borderRadius: '8px',
-                background: 'rgba(99,102,241,0.12)',
+                background: 'rgba(128, 91, 231,0.12)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
-                <Icon size={16} style={{ color: '#818CF8' }} />
+                <Icon size={16} style={{ color: '#9B7DF0' }} />
             </div>
-            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                 {title}
             </h3>
         </div>
@@ -47,10 +47,10 @@ const FormInput = ({ label, value, onChange, placeholder, type = 'text', icon: I
                 width: '100%', padding: '10px 14px', borderRadius: '10px',
                 border: '1px solid var(--border-subtle, #333)',
                 background: 'var(--bg-input, #262626)',
-                color: 'var(--text-primary, #F2F3EC)', fontSize: '13px',
+                color: 'var(--text-primary, #F5F6FA)', fontSize: '13px',
                 outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s'
             }}
-            onFocus={(e) => e.currentTarget.style.borderColor = '#6366F1'}
+            onFocus={(e) => e.currentTarget.style.borderColor = '#805BE7'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle, #333)'}
         />
     </div>
@@ -111,7 +111,7 @@ function SettingsPage() {
     const Toggle = ({ checked, onChange, label, description }) => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0' }}>
             <div>
-                <div style={{ fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '2px', fontSize: '13px' }}>
+                <div style={{ fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '2px', fontSize: '13px' }}>
                     {label}
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>
@@ -123,7 +123,7 @@ function SettingsPage() {
                     style={{ opacity: 0, width: 0, height: 0 }} />
                 <span style={{
                     position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: checked ? '#6366F1' : '#333',
+                    backgroundColor: checked ? '#805BE7' : '#333',
                     transition: '0.3s', borderRadius: '24px'
                 }}>
                     <span style={{
@@ -149,7 +149,7 @@ function SettingsPage() {
                         <ArrowLeft size={16} />
                     </button>
                     <div>
-                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Settings
                         </h1>
                         <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-muted, #888)' }}>
@@ -173,7 +173,7 @@ function SettingsPage() {
             <SectionCard icon={settings.theme === 'dark' ? Moon : Sun} title="Appearance">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div>
-                        <div style={{ fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '2px', fontSize: '13px' }}>
+                        <div style={{ fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '2px', fontSize: '13px' }}>
                             Theme
                         </div>
                         <div style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>
@@ -184,7 +184,7 @@ function SettingsPage() {
                         padding: '8px 16px', borderRadius: '8px',
                         border: '1px solid var(--border-subtle, #333)',
                         background: 'var(--bg-input, #262626)',
-                        color: 'var(--text-primary, #F2F3EC)', fontSize: '12px',
+                        color: 'var(--text-primary, #F5F6FA)', fontSize: '12px',
                         fontWeight: 600, cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: '6px'
                     }}>
@@ -206,7 +206,7 @@ function SettingsPage() {
                             width: '100%', padding: '10px 14px', borderRadius: '10px',
                             border: '1px solid var(--border-subtle, #333)',
                             background: 'var(--bg-input, #262626)',
-                            color: 'var(--text-primary, #F2F3EC)', fontSize: '13px', outline: 'none'
+                            color: 'var(--text-primary, #F5F6FA)', fontSize: '13px', outline: 'none'
                         }}>
                         <option value="en">English</option>
                         <option value="ar">العربية (Arabic)</option>
@@ -238,7 +238,7 @@ function SettingsPage() {
                 <button style={{
                     marginTop: '16px', padding: '10px 16px', borderRadius: '8px',
                     border: '1px solid var(--border-subtle, #333)',
-                    background: 'transparent', color: 'var(--text-primary, #F2F3EC)',
+                    background: 'transparent', color: 'var(--text-primary, #F5F6FA)',
                     fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: '6px'
                 }}>
@@ -250,7 +250,7 @@ function SettingsPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
                 <button onClick={handleSave} disabled={saving} style={{
                     padding: '12px 28px', borderRadius: '10px', border: 'none',
-                    background: saving ? 'rgba(99,102,241,0.3)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                    background: saving ? 'rgba(128, 91, 231,0.3)' : 'var(--brand-gradient)',
                     color: '#fff', fontSize: '14px', fontWeight: 600,
                     cursor: saving ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', gap: '8px',

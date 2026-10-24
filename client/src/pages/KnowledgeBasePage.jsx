@@ -4,10 +4,10 @@ import leadflowService from '../services/leadflowService';
 import { BookOpen, Search, Plus, Loader2, X, Tag, FileText, Edit3, Trash2, ChevronDown } from 'lucide-react';
 
 const CATEGORY_COLORS = {
-    PRODUCT: { bg: 'rgba(99,102,241,0.12)', text: '#818CF8' },
+    PRODUCT: { bg: 'rgba(128, 91, 231,0.12)', text: '#9B7DF0' },
     FAQ: { bg: 'rgba(52,211,153,0.12)', text: '#34D399' },
     POLICY: { bg: 'rgba(251,191,36,0.12)', text: '#FBBF24' },
-    PROCESS: { bg: 'rgba(139,92,246,0.12)', text: '#A78BFA' },
+    PROCESS: { bg: 'rgba(128, 91, 231,0.12)', text: '#A78BFA' },
     TROUBLESHOOTING: { bg: 'rgba(239,68,68,0.12)', text: '#EF4444' },
 };
 
@@ -108,12 +108,12 @@ function KnowledgeBasePage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                         <div style={{
                             width: '32px', height: '32px', borderRadius: '8px',
-                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            background: 'var(--brand-gradient)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             <BookOpen size={16} color="#fff" />
                         </div>
-                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Knowledge Base
                         </h1>
                     </div>
@@ -125,7 +125,7 @@ function KnowledgeBasePage() {
                     onClick={openCreate}
                     style={{
                         padding: '10px 20px', borderRadius: '10px', border: 'none',
-                        background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                        background: 'var(--brand-gradient)',
                         color: '#fff', fontSize: '13px', fontWeight: 600,
                         cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
                         transition: 'all 0.2s'
@@ -151,7 +151,7 @@ function KnowledgeBasePage() {
                             width: '100%', padding: '10px 14px 10px 40px',
                             borderRadius: '10px', border: '1px solid var(--border-subtle, #333)',
                             background: 'var(--bg-input, #262626)',
-                            color: 'var(--text-primary, #F2F3EC)', fontSize: '13px',
+                            color: 'var(--text-primary, #F5F6FA)', fontSize: '13px',
                             outline: 'none', boxSizing: 'border-box'
                         }}
                     />
@@ -165,7 +165,7 @@ function KnowledgeBasePage() {
                                 padding: '6px 14px', borderRadius: '14px', border: 'none',
                                 fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                                 background: categoryFilter === cat
-                                    ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+                                    ? 'var(--brand-gradient)'
                                     : 'rgba(255,255,255,0.06)',
                                 color: categoryFilter === cat ? '#fff' : 'var(--text-muted, #888)',
                                 transition: 'all 0.2s'
@@ -180,12 +180,12 @@ function KnowledgeBasePage() {
             {/* Items Grid */}
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                    <Loader2 className="spin" size={28} style={{ color: '#6366F1' }} />
+                    <Loader2 className="spin" size={28} style={{ color: '#805BE7' }} />
                 </div>
             ) : items.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text-muted, #555)' }}>
                     <FileText size={56} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '6px' }}>
                         No articles yet
                     </div>
                     <div style={{ fontSize: '13px', marginBottom: '20px' }}>
@@ -193,7 +193,7 @@ function KnowledgeBasePage() {
                     </div>
                     <button onClick={openCreate} style={{
                         padding: '10px 24px', borderRadius: '10px', border: 'none',
-                        background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                        background: 'var(--brand-gradient)',
                         color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer'
                     }}>
                         <Plus size={16} style={{ display: 'inline', marginRight: '6px' }} /> Create Article
@@ -204,11 +204,11 @@ function KnowledgeBasePage() {
                     {items.map(item => (
                         <div key={item.id} style={{
                             padding: '20px', borderRadius: '12px',
-                            background: 'var(--bg-surface, #1C1C1C)',
+                            background: 'var(--bg-surface, #1E2025)',
                             border: '1px solid var(--border-subtle, #2a2a2a)',
                             transition: 'all 0.2s'
                         }}
-                            onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)'}
+                            onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(128, 91, 231,0.3)'}
                             onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle, #2a2a2a)'}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -237,7 +237,7 @@ function KnowledgeBasePage() {
                                     </button>
                                 </div>
                             </div>
-                            <h3 style={{ margin: '0 0 8px 0', fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                            <h3 style={{ margin: '0 0 8px 0', fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                                 {item.title}
                             </h3>
                             <p style={{ margin: '0 0 12px 0', fontSize: '12px', color: 'var(--text-muted, #888)', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
@@ -271,11 +271,11 @@ function KnowledgeBasePage() {
                     <div style={{
                         width: '560px', maxHeight: '80vh', overflowY: 'auto',
                         padding: '28px', borderRadius: '16px',
-                        background: 'var(--bg-surface, #1C1C1C)',
+                        background: 'var(--bg-surface, #1E2025)',
                         border: '1px solid var(--border-subtle, #333)'
                     }} onClick={(e) => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                            <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                                 {editingItem ? 'Edit Article' : 'New Article'}
                             </h3>
                             <button onClick={() => setShowCreateModal(false)} style={{ padding: '4px', borderRadius: '6px', border: 'none', background: 'transparent', color: 'var(--text-muted, #888)', cursor: 'pointer' }}>
@@ -289,13 +289,13 @@ function KnowledgeBasePage() {
                                 <input type="text" value={formData.title}
                                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                                     placeholder="Article title"
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F2F3EC)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F5F6FA)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-muted, #888)', marginBottom: '6px' }}>Category</label>
                                 <select value={formData.category}
                                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F2F3EC)', fontSize: '13px', outline: 'none' }}>
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F5F6FA)', fontSize: '13px', outline: 'none' }}>
                                     {Object.keys(CATEGORY_COLORS).map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
@@ -307,7 +307,7 @@ function KnowledgeBasePage() {
                                     onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                                     placeholder="Write your article content here..."
                                     rows={6}
-                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F2F3EC)', fontSize: '13px', outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', lineHeight: 1.5 }} />
+                                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F5F6FA)', fontSize: '13px', outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', lineHeight: 1.5 }} />
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-muted, #888)', marginBottom: '6px' }}>Tags</label>
@@ -316,8 +316,8 @@ function KnowledgeBasePage() {
                                         onChange={(e) => setTagInput(e.target.value)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
                                         placeholder="Add a tag and press Enter"
-                                        style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F2F3EC)', fontSize: '13px', outline: 'none' }} />
-                                    <button onClick={addTag} style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'rgba(99,102,241,0.15)', color: '#818CF8', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Add</button>
+                                        style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-subtle, #333)', background: 'var(--bg-input, #262626)', color: 'var(--text-primary, #F5F6FA)', fontSize: '13px', outline: 'none' }} />
+                                    <button onClick={addTag} style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'rgba(128, 91, 231,0.15)', color: '#9B7DF0', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Add</button>
                                 </div>
                                 {formData.tags.length > 0 && (
                                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
@@ -325,11 +325,11 @@ function KnowledgeBasePage() {
                                             <span key={i} style={{
                                                 display: 'flex', alignItems: 'center', gap: '4px',
                                                 padding: '3px 8px', borderRadius: '6px',
-                                                background: 'rgba(99,102,241,0.1)',
-                                                color: '#818CF8', fontSize: '11px'
+                                                background: 'rgba(128, 91, 231,0.1)',
+                                                color: '#9B7DF0', fontSize: '11px'
                                             }}>
                                                 #{tag}
-                                                <button onClick={() => removeTag(tag)} style={{ padding: 0, border: 'none', background: 'transparent', color: '#818CF8', cursor: 'pointer', fontSize: '12px', lineHeight: 1 }}>×</button>
+                                                <button onClick={() => removeTag(tag)} style={{ padding: 0, border: 'none', background: 'transparent', color: '#9B7DF0', cursor: 'pointer', fontSize: '12px', lineHeight: 1 }}>×</button>
                                             </span>
                                         ))}
                                     </div>
@@ -339,7 +339,7 @@ function KnowledgeBasePage() {
                                 style={{
                                     padding: '12px', borderRadius: '10px', border: 'none',
                                     background: !formData.title.trim() || !formData.content.trim()
-                                        ? 'rgba(99,102,241,0.3)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                        ? 'rgba(128, 91, 231,0.3)' : 'var(--brand-gradient)',
                                     color: '#fff', fontSize: '14px', fontWeight: 600,
                                     cursor: !formData.title.trim() || !formData.content.trim() ? 'not-allowed' : 'pointer',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',

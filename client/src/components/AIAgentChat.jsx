@@ -499,7 +499,7 @@ const AIAgentChat = () => {
                         style={{
                             width: '100%',
                             padding: '0.75rem',
-                            backgroundColor: '#E0AA3E',
+                            backgroundColor: '#E6B84D',
                             color: '#000',
                             border: 'none',
                             borderRadius: '8px',
@@ -550,8 +550,8 @@ const AIAgentChat = () => {
                                             padding: '0.25rem 0.75rem',
                                             borderRadius: '9999px',
                                             border: '1px solid',
-                                            borderColor: activeMode === mode ? '#E0AA3E' : 'var(--border)',
-                                            backgroundColor: activeMode === mode ? '#E0AA3E' : 'var(--bg-hover)',
+                                            borderColor: activeMode === mode ? '#E6B84D' : 'var(--border)',
+                                            backgroundColor: activeMode === mode ? '#E6B84D' : 'var(--bg-hover)',
                                             color: activeMode === mode ? '#000' : 'var(--text-muted)',
                                             fontSize: '0.75rem',
                                             cursor: 'pointer'
@@ -637,7 +637,7 @@ const AIAgentChat = () => {
                                                 onClick={() => handleSelectSession(session.id)}
                                                 style={{
                                                     flex: 1,
-                                                    color: currentSessionId === session.id ? '#E0AA3E' : 'var(--text-muted)',
+                                                    color: currentSessionId === session.id ? '#E6B84D' : 'var(--text-muted)',
                                                     fontSize: '0.9rem',
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
@@ -757,13 +757,13 @@ const AIAgentChat = () => {
                                         backgroundColor: 'var(--bg-hover)',
                                         border: '1px solid var(--border)',
                                         borderRadius: '9999px',
-                                        color: '#E0AA3E',
+                                        color: '#E6B84D',
                                         fontWeight: '500',
                                         cursor: 'pointer',
                                         boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
                                         transition: 'all 0.2s'
                                     }}
-                                    onMouseEnter={(e) => { e.target.style.borderColor = '#E0AA3E'; e.target.style.transform = 'translateY(-2px)'; }}
+                                    onMouseEnter={(e) => { e.target.style.borderColor = '#E6B84D'; e.target.style.transform = 'translateY(-2px)'; }}
                                     onMouseLeave={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.transform = 'translateY(0)'; }}
                                 >
                                     {prompt}
@@ -776,7 +776,7 @@ const AIAgentChat = () => {
                                 onClick={() => handleNewChat()}
                                 style={{
                                     padding: '0.75rem 2rem',
-                                    backgroundColor: '#E0AA3E',
+                                    backgroundColor: '#E6B84D',
                                     color: '#000',
                                     border: 'none',
                                     borderRadius: '8px',
@@ -929,7 +929,7 @@ const AIAgentChat = () => {
                                                                         padding: '0.2rem 0.4rem',
                                                                         borderRadius: '4px',
                                                                         fontSize: '0.9em',
-                                                                        color: '#E0AA3E'
+                                                                        color: '#E6B84D'
                                                                     }} {...props} /> :
                                                                     <code style={{
                                                                         display: 'block',
@@ -946,7 +946,7 @@ const AIAgentChat = () => {
                                                                 <p style={{ margin: '0.5rem 0' }} {...props} />
                                                             ),
                                                             strong: ({ ...props }) => (
-                                                                <strong style={{ fontWeight: '600', color: '#E0AA3E' }} {...props} />
+                                                                <strong style={{ fontWeight: '600', color: '#E6B84D' }} {...props} />
                                                             )
                                                         }}
                                                     >
@@ -997,7 +997,7 @@ const AIAgentChat = () => {
                                         style={{
                                             padding: '0.5rem 1rem',
                                             borderRadius: '9999px',
-                                            border: '1px solid #FFC107',
+                                            border: '1px solid #E6B84D',
                                             backgroundColor: 'transparent',
                                             color: 'var(--text-primary)',
                                             fontSize: '0.85rem',
@@ -1006,7 +1006,7 @@ const AIAgentChat = () => {
                                             transition: 'all 0.2s',
                                             fontWeight: '500'
                                         }}
-                                        onMouseEnter={(e) => { e.target.style.backgroundColor = 'rgba(255, 193, 7, 0.1)'; }}
+                                        onMouseEnter={(e) => { e.target.style.backgroundColor = 'rgba(230, 184, 77, 0.1)'; }}
                                         onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; }}
                                     >
                                         {prompt}
@@ -1038,7 +1038,7 @@ const AIAgentChat = () => {
                                         padding: '0 1.5rem',
                                         borderRadius: '12px',
                                         border: 'none',
-                                        backgroundColor: '#FFC107',
+                                        backgroundColor: '#E6B84D',
                                         color: '#000000',
                                         fontWeight: 'bold',
                                         cursor: inputValue.trim() ? 'pointer' : 'not-allowed',

@@ -155,7 +155,7 @@ const getCategories = (t) => [
         icon: Rocket,
         titleKey: 'docs.categories.gettingStarted',
         descKey: 'docs.categories.gettingStartedDesc',
-        accentColor: '#E0AA3E',
+        accentColor: '#E6B84D',
     },
     {
         id: 'deployment',
@@ -183,7 +183,7 @@ const getCategories = (t) => [
         icon: MicroMindIcon,
         titleKey: 'docs.categories.aiIntegration',
         descKey: 'docs.categories.aiIntegrationDesc',
-        accentColor: '#E0AA3E',
+        accentColor: '#E6B84D',
     },
     {
         id: 'example-apps',

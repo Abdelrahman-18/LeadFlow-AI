@@ -17,7 +17,7 @@
 }
 
 .mm-pagination-select {
-    background: var(--bg-input, #0F0F0F);
+    background: var(--bg-input, #111214);
     border: 1px solid var(--border-color, #333);
     color: var(--text-primary, #fff);
     padding: 4px 8px;
@@ -28,7 +28,7 @@
 
 .mm-pagination-select:focus {
     outline: none;
-    border-color: var(--primary, #E0AA3E);
+    border-color: var(--primary, #805BE7);
 }
 
 .mm-pagination-info {
@@ -49,7 +49,7 @@
     min-width: 32px;
     height: 32px;
     padding: 0 8px;
-    background: var(--bg-surface, #1C1C1C);
+    background: var(--bg-surface, #1E2025);
     border: 1px solid var(--border-color, #333);
     color: var(--text-primary, #fff);
     border-radius: 4px;
@@ -61,7 +61,7 @@
 
 .mm-pagination-btn:hover:not(:disabled) {
     background: var(--bg-hover, #262626);
-    border-color: var(--primary, #E0AA3E);
+    border-color: var(--primary, #805BE7);
 }
 
 .mm-pagination-btn:disabled {
@@ -70,9 +70,9 @@
 }
 
 .mm-pagination-number.active {
-    background: var(--primary, #E0AA3E);
+    background: var(--primary, #805BE7);
     color: #000;
-    border-color: var(--primary, #E0AA3E);
+    border-color: var(--primary, #805BE7);
     font-weight: 600;
 }
 

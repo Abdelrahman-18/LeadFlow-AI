@@ -44,7 +44,7 @@ const LoginScreen = () => {
                 right: '-30%',
                 width: '800px',
                 height: '800px',
-                background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(128, 91, 231,0.08) 0%, transparent 70%)',
                 pointerEvents: 'none'
             }} />
 
@@ -70,14 +70,14 @@ const LoginScreen = () => {
                         height: '56px',
                         margin: '0 auto 1.25rem auto',
                         borderRadius: '14px',
-                        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                        background: 'var(--brand-gradient)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '22px',
                         fontWeight: '800',
                         color: '#fff',
-                        boxShadow: '0 8px 24px rgba(99, 102, 241, 0.3)'
+                        boxShadow: '0 8px 24px rgba(128, 91, 231, 0.3)'
                     }}>
                         LF
                     </div>
@@ -227,8 +227,8 @@ const LoginScreen = () => {
                                 borderRadius: '10px',
                                 border: 'none',
                                 background: loading
-                                    ? 'linear-gradient(135deg, #4F46E5, #7C3AED)'
-                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                    ? 'linear-gradient(135deg, #6C47D6, #5E3FC4)'
+                                    : 'var(--brand-gradient)',
                                 color: '#fff',
                                 fontSize: '0.95rem',
                                 fontWeight: '600',
@@ -239,13 +239,13 @@ const LoginScreen = () => {
                                 gap: '8px',
                                 transition: 'opacity 150ms',
                                 opacity: loading ? 0.7 : 1,
-                                boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)'
+                                boxShadow: '0 4px 16px rgba(128, 91, 231, 0.3)'
                             }}
                             onMouseEnter={(e) => {
-                                if (!loading) e.target.style.background = 'linear-gradient(135deg, #4F46E5, #7C3AED)';
+                                if (!loading) e.target.style.background = 'linear-gradient(135deg, #6C47D6, #5E3FC4)';
                             }}
                             onMouseLeave={(e) => {
-                                if (!loading) e.target.style.background = 'linear-gradient(135deg, #6366F1, #8B5CF6)';
+                                if (!loading) e.target.style.background = 'var(--brand-gradient)';
                             }}
                         >
                             {loading ? (

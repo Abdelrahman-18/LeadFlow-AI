@@ -34,9 +34,9 @@
 }
 
 .mm-badge--warning {
-    background: rgba(255, 193, 7, 0.15);
-    color: #ffc107;
-    border: 1px solid rgba(255, 193, 7, 0.3);
+    background: rgba(230, 184, 77, 0.15);
+    color: #E6B84D;
+    border: 1px solid rgba(230, 184, 77, 0.3);
 }
 
 .mm-badge--error {

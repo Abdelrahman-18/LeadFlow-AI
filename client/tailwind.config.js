@@ -6,30 +6,31 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // Brand Colors - LeadFlow AI Palette
+                // Brand Colors - LeadFlow Design System
                 brand: {
-                    primary: '#6366F1',  // LeadFlow Indigo
-                    hover: '#4F46E5',    // Hover state
-                    accent: '#8B5CF6',   // Purple accent
-                    bone: '#F2F3EC',     // Brand bone/cream
+                    primary: '#805BE7',  // Primary Action (Purple)
+                    hover: '#6C47D6',    // Primary hover (darker purple)
+                    accent: '#E6B84D',   // Active State (Yellow)
+                    bone: '#F5F6FA',     // Primary text tone
                 },
                 // Backgrounds - Dark theme
                 bg: {
-                    page: '#0F0F0F',     // Darkest background
-                    surface: '#1C1C1C',  // Card/drawer background
-                    input: '#262626',    // Input fields
-                    hover: '#333333',    // Hover states
+                    page: '#111214',     // Main Background
+                    sidebar: '#0D0E10',  // Sidebar Background
+                    surface: '#1E2025',  // Cards / Surface
+                    input: '#111214',    // Input fields
+                    hover: '#2A2C33',    // Hover Surface
                 },
                 // Typography
                 text: {
-                    main: '#F2F3EC',     // Primary text
-                    muted: '#888888',    // Secondary text
+                    main: '#F5F6FA',     // Primary Text
+                    muted: '#A9ADB8',    // Secondary Text
                     onBrand: '#FFFFFF',  // Text on brand backgrounds
                 },
                 // Borders
                 border: {
-                    subtle: '#333333',   // Default borders
-                    active: '#6366F1',   // Active/focused borders
+                    subtle: '#34363E',   // Border
+                    active: '#805BE7',   // Active/focused borders
                 },
                 // Status colors
                 status: {

@@ -4,7 +4,7 @@ import leadflowService from '../services/leadflowService';
 import { MessageSquare, Search, Filter, User, Clock, CheckCircle, AlertCircle, Loader2, Send, ChevronDown, Inbox, Archive, RefreshCw, Sparkles, Copy, ExternalLink } from 'lucide-react';
 
 const STATUS_COLORS = {
-    ACTIVE: { bg: 'rgba(99,102,241,0.12)', text: '#818CF8', label: 'Active' },
+    ACTIVE: { bg: 'rgba(128, 91, 231,0.12)', text: '#9B7DF0', label: 'Active' },
     PENDING: { bg: 'rgba(251,191,36,0.12)', text: '#FBBF24', label: 'Pending' },
     RESOLVED: { bg: 'rgba(52,211,153,0.12)', text: '#34D399', label: 'Resolved' },
     ARCHIVED: { bg: 'rgba(107,114,128,0.12)', text: '#9CA3AF', label: 'Archived' },
@@ -126,25 +126,25 @@ function ConversationsPage() {
                 width: '380px', minWidth: '380px',
                 borderRight: '1px solid var(--border-subtle, #2a2a2a)',
                 display: 'flex', flexDirection: 'column',
-                background: 'var(--bg-surface, #1C1C1C)'
+                background: 'var(--bg-surface, #1E2025)'
             }}>
                 {/* Header */}
                 <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid var(--border-subtle, #2a2a2a)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                         <div style={{
                             width: '32px', height: '32px', borderRadius: '8px',
-                            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                            background: 'var(--brand-gradient)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             <MessageSquare size={16} color="#fff" />
                         </div>
-                        <h2 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text-primary, #F2F3EC)' }}>
+                        <h2 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                             Conversations
                         </h2>
                         <span style={{
                             marginLeft: 'auto', fontSize: '12px', padding: '2px 8px',
-                            borderRadius: '10px', background: 'rgba(99,102,241,0.12)',
-                            color: '#818CF8', fontWeight: 600
+                            borderRadius: '10px', background: 'rgba(128, 91, 231,0.12)',
+                            color: '#9B7DF0', fontWeight: 600
                         }}>
                             {conversations.length}
                         </span>
@@ -165,7 +165,7 @@ function ConversationsPage() {
                                 width: '100%', padding: '9px 12px 9px 36px',
                                 borderRadius: '8px', border: '1px solid var(--border-subtle, #333)',
                                 background: 'var(--bg-input, #262626)',
-                                color: 'var(--text-primary, #F2F3EC)', fontSize: '13px',
+                                color: 'var(--text-primary, #F5F6FA)', fontSize: '13px',
                                 outline: 'none', boxSizing: 'border-box'
                             }}
                         />
@@ -181,7 +181,7 @@ function ConversationsPage() {
                                     padding: '5px 12px', borderRadius: '14px', border: 'none',
                                     fontSize: '12px', fontWeight: 600, cursor: 'pointer',
                                     background: statusFilter === status
-                                        ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+                                        ? 'var(--brand-gradient)'
                                         : 'rgba(255,255,255,0.06)',
                                     color: statusFilter === status ? '#fff' : 'var(--text-muted, #888)',
                                     transition: 'all 0.2s'
@@ -197,12 +197,12 @@ function ConversationsPage() {
                 <div style={{ flex: 1, overflowY: 'auto' }}>
                     {loading ? (
                         <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
-                            <Loader2 className="spin" size={24} style={{ color: '#6366F1' }} />
+                            <Loader2 className="spin" size={24} style={{ color: '#805BE7' }} />
                         </div>
                     ) : conversations.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted, #666)' }}>
                             <Inbox size={40} style={{ marginBottom: '12px', opacity: 0.3 }} />
-                            <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary, #F2F3EC)' }}>
+                            <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary, #F5F6FA)' }}>
                                 No conversations
                             </div>
                             <div style={{ fontSize: '12px' }}>
@@ -218,7 +218,7 @@ function ConversationsPage() {
                                     width: '100%', padding: '14px 20px', border: 'none',
                                     borderBottom: '1px solid var(--border-subtle, #222)',
                                     background: selectedConversation?.id === conv.id
-                                        ? 'rgba(99,102,241,0.08)'
+                                        ? 'rgba(128, 91, 231,0.08)'
                                         : 'transparent',
                                     cursor: 'pointer', textAlign: 'left',
                                     transition: 'background 0.15s',
@@ -232,7 +232,7 @@ function ConversationsPage() {
                                     width: '40px', height: '40px', borderRadius: '10px', minWidth: '40px',
                                     background: conv.customer?.avatarUrl
                                         ? `url(${conv.customer.avatarUrl}) center/cover`
-                                        : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                        : 'var(--brand-gradient)',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     color: '#fff', fontWeight: 700, fontSize: '15px'
                                 }}>
@@ -241,7 +241,7 @@ function ConversationsPage() {
 
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                                             {conv.customer?.name || 'Unknown'}
                                         </span>
                                         <span style={{ fontSize: '11px', color: 'var(--text-muted, #666)' }}>
@@ -281,13 +281,13 @@ function ConversationsPage() {
             {/* Conversation Detail */}
             <div style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
-                background: 'var(--bg-page, #0F0F0F)',
+                background: 'var(--bg-page, #111214)',
                 alignItems: 'center', justifyContent: selectedConversation ? 'flex-start' : 'center'
             }}>
                 {!selectedConversation ? (
                     <div style={{ textAlign: 'center', color: 'var(--text-muted, #555)' }}>
                         <MessageSquare size={56} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                        <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)', marginBottom: '6px' }}>
+                        <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)', marginBottom: '6px' }}>
                             Select a conversation
                         </div>
                         <div style={{ fontSize: '13px' }}>
@@ -296,7 +296,7 @@ function ConversationsPage() {
                     </div>
                 ) : loadingMessages ? (
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                        <Loader2 className="spin" size={28} style={{ color: '#6366F1' }} />
+                        <Loader2 className="spin" size={28} style={{ color: '#805BE7' }} />
                     </div>
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -304,20 +304,20 @@ function ConversationsPage() {
                         <div style={{
                             padding: '16px 24px', borderBottom: '1px solid var(--border-subtle, #2a2a2a)',
                             display: 'flex', alignItems: 'center', gap: '14px',
-                            background: 'var(--bg-surface, #1C1C1C)'
+                            background: 'var(--bg-surface, #1E2025)'
                         }}>
                             <div style={{
                                 width: '44px', height: '44px', borderRadius: '12px',
                                 background: selectedConversation.customer?.avatarUrl
                                     ? `url(${selectedConversation.customer.avatarUrl}) center/cover`
-                                    : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                    : 'var(--brand-gradient)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 color: '#fff', fontWeight: 700, fontSize: '16px'
                             }}>
                                 {!selectedConversation.customer?.avatarUrl && (selectedConversation.customer?.name?.charAt(0) || '?')}
                             </div>
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F2F3EC)' }}>
+                                <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary, #F5F6FA)' }}>
                                     {selectedConversation.customer?.name || 'Unknown'}
                                 </div>
                                 <div style={{ fontSize: '12px', color: 'var(--text-muted, #888)' }}>
@@ -352,12 +352,12 @@ function ConversationsPage() {
                                         <div style={{
                                             maxWidth: '70%', padding: '12px 16px', borderRadius: '12px',
                                             background: msg.sender === 'AI' || msg.sender === 'BOT'
-                                                ? 'var(--bg-surface, #1C1C1C)'
-                                                : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                                ? 'var(--bg-surface, #1E2025)'
+                                                : 'var(--brand-gradient)',
                                             border: msg.sender === 'AI' || msg.sender === 'BOT'
                                                 ? '1px solid var(--border-subtle, #2a2a2a)' : 'none',
                                             color: msg.sender === 'AI' || msg.sender === 'BOT'
-                                                ? 'var(--text-primary, #F2F3EC)' : '#fff',
+                                                ? 'var(--text-primary, #F5F6FA)' : '#fff',
                                             fontSize: '13px', lineHeight: 1.5
                                         }}>
                                             <div style={{ fontSize: '10px', color: msg.sender === 'AI' || msg.sender === 'BOT' ? 'var(--text-muted, #666)' : 'rgba(255,255,255,0.7)', marginBottom: '4px', fontWeight: 600 }}>
@@ -378,7 +378,7 @@ function ConversationsPage() {
                         <div style={{
                             borderTop: '1px solid var(--border-subtle, #2a2a2a)',
                             padding: '12px 24px',
-                            background: 'var(--bg-surface, #1C1C1C)'
+                            background: 'var(--bg-surface, #1E2025)'
                         }}>
                             <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
                                 <textarea
@@ -392,7 +392,7 @@ function ConversationsPage() {
                                         flex: 1, padding: '10px 14px', borderRadius: '10px',
                                         border: '1px solid var(--border-subtle, #333)',
                                         background: 'var(--bg-input, #262626)',
-                                        color: 'var(--text-primary, #F2F3EC)',
+                                        color: 'var(--text-primary, #F5F6FA)',
                                         fontSize: '13px', fontFamily: 'inherit',
                                         resize: 'none', outline: 'none', boxSizing: 'border-box',
                                         lineHeight: 1.4, maxHeight: '80px'
@@ -403,7 +403,7 @@ function ConversationsPage() {
                                     disabled={sendingMessage}
                                     style={{
                                         padding: '10px 20px', borderRadius: '10px', border: 'none',
-                                        background: sendingMessage ? 'rgba(99,102,241,0.5)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                                        background: sendingMessage ? 'rgba(128, 91, 231,0.5)' : 'var(--brand-gradient)',
                                         color: '#fff', fontSize: '13px', fontWeight: 600,
                                         cursor: sendingMessage ? 'not-allowed' : 'pointer',
                                         display: 'flex', alignItems: 'center', gap: '6px',
