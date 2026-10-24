@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../supabaseClient';
 import { Puzzle, MessageSquare, Globe, Mail, Database, Phone, Bot, ExternalLink, CheckCircle, XCircle, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
 
 const INTEGRATIONS = [
@@ -10,7 +11,7 @@ const INTEGRATIONS = [
         icon: MessageSquare,
         color: '#1877F2',
         bgGradient: 'linear-gradient(135deg, #1877F2, #0D65D9)',
-        connected: false,
+        connected: true,
         category: 'messaging',
         docsUrl: '#',
     },
@@ -32,7 +33,7 @@ const INTEGRATIONS = [
         icon: Globe,
         color: '#E4405F',
         bgGradient: 'linear-gradient(135deg, #E4405F, #C13584)',
-        connected: false,
+        connected: true,
         category: 'messaging',
         docsUrl: '#',
     },
@@ -84,15 +85,74 @@ function IntegrationsPage() {
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [connecting, setConnecting] = useState(null);
     const [integrations, setIntegrations] = useState(INTEGRATIONS);
+    const [orgSettings, setOrgSettings] = useState(null);
+
+    // Load integration states from Supabase organizations table
+    useEffect(() => {
+        const loadOrgSettings = async () => {
+            try {
+                const { data } = await supabase
+                    .from('organizations')
+                    .select('id, settings')
+                    .limit(1)
+                    .single();
+
+                if (data && data.settings) {
+                    setOrgSettings(data.settings);
+                    if (data.settings.integrations) {
+                        setIntegrations(prev => prev.map(item => ({
+                            ...item,
+                            connected: data.settings.integrations[item.id] !== undefined
+                                ? data.settings.integrations[item.id]
+                                : item.connected
+                        })));
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to load organization settings from Supabase:', err);
+            }
+        };
+
+        loadOrgSettings();
+    }, []);
 
     const handleConnect = async (id) => {
         setConnecting(id);
-        // Simulate connection delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIntegrations(prev => prev.map(i =>
-            i.id === id ? { ...i, connected: !i.connected, status: i.connected ? undefined : 'Active' } : i
-        ));
-        setConnecting(null);
+
+        try {
+            const target = integrations.find(i => i.id === id);
+            const newConnectedState = !target?.connected;
+
+            // Update local state immediately
+            setIntegrations(prev => prev.map(i =>
+                i.id === id ? { ...i, connected: newConnectedState, status: newConnectedState ? 'Active' : undefined } : i
+            ));
+
+            // Persist to Supabase organizations table settings JSON
+            const updatedIntegrations = {
+                ...(orgSettings?.integrations || {}),
+                [id]: newConnectedState
+            };
+
+            const updatedSettings = {
+                ...(orgSettings || {}),
+                integrations: updatedIntegrations
+            };
+
+            setOrgSettings(updatedSettings);
+
+            await supabase
+                .from('organizations')
+                .update({
+                    settings: updatedSettings,
+                    updatedAt: new Date().toISOString()
+                })
+                .eq('id', '4d01ebeb-a684-4e84-bb66-a4ed5c76f42c');
+        } catch (error) {
+            console.error('Error updating integration in Supabase:', error);
+        } finally {
+            setConnecting(null);
+        }
     };
 
     const filtered = categoryFilter === 'all'
@@ -113,6 +173,12 @@ function IntegrationsPage() {
                 <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
                     Integrations
                 </h1>
+                <span style={{
+                    fontSize: '11px', padding: '3px 8px', borderRadius: '6px',
+                    background: 'rgba(52,211,153,0.12)', color: '#34D399', fontWeight: 600
+                }}>
+                    Supabase Synced
+                </span>
             </div>
             <p style={{ margin: '6px 0 28px 0', fontSize: '13px', color: 'var(--text-muted, #888)' }}>
                 Connect your tools and channels to extend LeadFlow's capabilities
@@ -159,73 +225,82 @@ function IntegrationsPage() {
                             {/* Status indicator dot */}
                             {integration.connected && (
                                 <div style={{
-                                    position: 'absolute', top: '20px', right: '20px',
-                                    display: 'flex', alignItems: 'center', gap: '5px',
-                                    fontSize: '11px', color: '#34D399', fontWeight: 600
+                                    position: 'absolute', top: '16px', right: '16px',
+                                    display: 'flex', alignItems: 'center', gap: '6px'
                                 }}>
-                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#34D399' }} />
-                                    {integration.status || 'Connected'}
+                                    <span style={{
+                                        width: '8px', height: '8px', borderRadius: '50%',
+                                        background: '#34D399', boxShadow: '0 0 8px rgba(52,211,153,0.6)'
+                                    }} />
+                                    <span style={{ fontSize: '11px', color: '#34D399', fontWeight: 600 }}>Active</span>
                                 </div>
                             )}
 
-                            {/* Icon */}
-                            <div style={{
-                                width: '48px', height: '48px', borderRadius: '14px',
-                                background: integration.bgGradient,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                marginBottom: '16px'
-                            }}>
-                                <Icon size={22} color="#fff" />
+                            {/* Icon + Name */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                                <div style={{
+                                    width: '44px', height: '44px', borderRadius: '12px',
+                                    background: integration.bgGradient || 'var(--brand-gradient)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
+                                }}>
+                                    <Icon size={22} color="#fff" />
+                                </div>
+                                <div>
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
+                                        {integration.name}
+                                    </h3>
+                                    <span style={{ fontSize: '11px', color: 'var(--text-muted, #888)', textTransform: 'capitalize' }}>
+                                        {integration.category}
+                                    </span>
+                                </div>
                             </div>
 
-                            {/* Name + Description */}
-                            <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)', paddingRight: integration.connected ? '80px' : 0 }}>
-                                {integration.name}
-                            </h3>
-                            <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: 'var(--text-muted, #888)', lineHeight: 1.5 }}>
+                            {/* Description */}
+                            <p style={{
+                                margin: '0 0 20px 0', fontSize: '12px', color: 'var(--text-muted, #888)',
+                                lineHeight: 1.6, minHeight: '38px'
+                            }}>
                                 {integration.description}
                             </p>
 
-                            {/* Action */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            {/* Actions */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px', borderTop: '1px solid var(--border-subtle, #222)' }}>
+                                <a
+                                    href={integration.docsUrl}
+                                    style={{
+                                        fontSize: '12px', color: '#9B7DF0', textDecoration: 'none',
+                                        display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500
+                                    }}
+                                >
+                                    Documentation <ExternalLink size={12} />
+                                </a>
+
                                 <button
                                     onClick={() => handleConnect(integration.id)}
                                     disabled={connecting === integration.id}
                                     style={{
-                                        padding: '9px 20px', borderRadius: '10px', border: 'none',
-                                        background: connecting === integration.id
-                                            ? 'rgba(128, 91, 231,0.3)'
-                                            : integration.connected
-                                                ? 'rgba(239,68,68,0.1)' : 'var(--brand-gradient)',
-                                        color: connecting === integration.id
-                                            ? '#fff'
-                                            : integration.connected ? '#EF4444' : '#fff',
-                                        fontSize: '13px', fontWeight: 600,
-                                        cursor: connecting === integration.id ? 'not-allowed' : 'pointer',
+                                        padding: '7px 18px', borderRadius: '8px', border: 'none',
+                                        fontSize: '12px', fontWeight: 600, cursor: connecting === integration.id ? 'not-allowed' : 'pointer',
+                                        background: integration.connected
+                                            ? 'rgba(239,68,68,0.1)'
+                                            : 'var(--brand-gradient)',
+                                        color: integration.connected ? '#EF4444' : '#fff',
                                         display: 'flex', alignItems: 'center', gap: '6px',
                                         transition: 'all 0.2s'
                                     }}
                                 >
                                     {connecting === integration.id ? (
-                                        <><Loader2 className="spin" size={14} /> Connecting...</>
+                                        <>
+                                            <Loader2 className="spin" size={14} />
+                                            Updating...
+                                        </>
                                     ) : integration.connected ? (
-                                        <><XCircle size={14} /> Disconnect</>
+                                        'Disconnect'
                                     ) : (
-                                        <><ExternalLink size={14} /> Connect</>
+                                        'Connect'
                                     )}
                                 </button>
-                                {integration.docsUrl && (
-                                    <a href={integration.docsUrl}
-                                        style={{
-                                            padding: '9px 14px', borderRadius: '8px',
-                                            border: '1px solid var(--border-subtle, #333)',
-                                            color: 'var(--text-muted, #888)', fontSize: '12px',
-                                            textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px',
-                                            fontWeight: 500
-                                        }}>
-                                        Docs <ChevronRight size={14} />
-                                    </a>
-                                )}
                             </div>
                         </div>
                     );

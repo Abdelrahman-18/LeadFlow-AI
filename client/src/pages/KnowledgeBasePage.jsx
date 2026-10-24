@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../supabaseClient';
 import leadflowService from '../services/leadflowService';
 import { BookOpen, Search, Plus, Loader2, X, Tag, FileText, Edit3, Trash2, ChevronDown } from 'lucide-react';
 
@@ -26,13 +27,40 @@ function KnowledgeBasePage() {
     const fetchItems = async () => {
         try {
             setLoading(true);
-            const params = {};
-            if (searchQuery) params.search = searchQuery;
-            if (categoryFilter !== 'ALL') params.category = categoryFilter;
-            const data = await leadflowService.getKnowledge(params);
-            setItems(data || []);
+
+            // 1. Fetch from Supabase knowledge_items table
+            let query = supabase
+                .from('knowledge_items')
+                .select('*')
+                .order('createdAt', { ascending: false });
+
+            if (categoryFilter !== 'ALL') {
+                query = query.eq('category', categoryFilter);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+
+            const filtered = searchQuery
+                ? (data || []).filter(item =>
+                    item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (item.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
+                )
+                : (data || []);
+
+            setItems(filtered);
         } catch (error) {
-            console.error('Error fetching knowledge base:', error);
+            console.error('Error fetching knowledge base from Supabase:', error);
+            try {
+                const params = {};
+                if (searchQuery) params.search = searchQuery;
+                if (categoryFilter !== 'ALL') params.category = categoryFilter;
+                const data = await leadflowService.getKnowledge(params);
+                setItems(data || []);
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -63,15 +91,52 @@ function KnowledgeBasePage() {
         if (!formData.title.trim() || !formData.content.trim()) return;
         setSaving(true);
         try {
+            const now = new Date().toISOString();
             if (editingItem) {
-                await leadflowService.updateKnowledge(editingItem.id, formData);
+                const { error } = await supabase
+                    .from('knowledge_items')
+                    .update({
+                        title: formData.title,
+                        content: formData.content,
+                        category: formData.category,
+                        tags: formData.tags || [],
+                        updatedAt: now
+                    })
+                    .eq('id', editingItem.id);
+
+                if (error) throw error;
             } else {
-                await leadflowService.createKnowledge(formData);
+                const orgId = '4d01ebeb-a684-4e84-bb66-a4ed5c76f42c';
+                const { error } = await supabase
+                    .from('knowledge_items')
+                    .insert({
+                        organizationId: orgId,
+                        title: formData.title,
+                        content: formData.content,
+                        category: formData.category,
+                        tags: formData.tags || [],
+                        isActive: true,
+                        createdAt: now,
+                        updatedAt: now
+                    });
+
+                if (error) throw error;
             }
             setShowCreateModal(false);
             fetchItems();
         } catch (error) {
-            console.error('Error saving knowledge item:', error);
+            console.error('Error saving knowledge item to Supabase:', error);
+            try {
+                if (editingItem) {
+                    await leadflowService.updateKnowledge(editingItem.id, formData);
+                } else {
+                    await leadflowService.createKnowledge(formData);
+                }
+                setShowCreateModal(false);
+                fetchItems();
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         } finally {
             setSaving(false);
         }
@@ -80,10 +145,17 @@ function KnowledgeBasePage() {
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this knowledge item?')) return;
         try {
-            await leadflowService.deleteKnowledge(id);
+            const { error } = await supabase.from('knowledge_items').delete().eq('id', id);
+            if (error) throw error;
             fetchItems();
         } catch (error) {
-            console.error('Error deleting:', error);
+            console.error('Error deleting from Supabase:', error);
+            try {
+                await leadflowService.deleteKnowledge(id);
+                fetchItems();
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         }
     };
 

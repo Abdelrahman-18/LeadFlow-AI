@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../supabaseClient';
 import leadflowService from '../services/leadflowService';
 import { MessageSquare, Search, Filter, User, Clock, CheckCircle, AlertCircle, Loader2, Send, ChevronDown, Inbox, Archive, RefreshCw, Sparkles, Copy, ExternalLink } from 'lucide-react';
 
@@ -17,7 +18,7 @@ function ConversationsPage() {
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('ACTIVE');
+    const [statusFilter, setStatusFilter] = useState('ALL');
     const [showStatusDropdown, setShowStatusDropdown] = useState(false);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [messages, setMessages] = useState(null);
@@ -30,13 +31,70 @@ function ConversationsPage() {
     const fetchConversations = async () => {
         try {
             setLoading(true);
-            const params = { limit: 50 };
-            if (statusFilter !== 'ALL') params.status = statusFilter;
-            if (searchQuery) params.search = searchQuery;
-            const data = await leadflowService.getConversations(params);
-            setConversations(data.items || []);
+
+            // 1. Fetch conversations from Supabase
+            let query = supabase
+                .from('conversations')
+                .select('*')
+                .order('lastMessageAt', { ascending: false });
+
+            if (statusFilter !== 'ALL') {
+                query = query.eq('status', statusFilter);
+            }
+
+            const { data: convData, error: convError } = await query;
+            if (convError) throw convError;
+
+            // 2. Fetch associated customers, leads, and message counts
+            const customerIds = [...new Set((convData || []).map(c => c.customerId).filter(Boolean))];
+            const convIds = (convData || []).map(c => c.id);
+
+            const [custRes, leadsRes, msgsRes] = await Promise.all([
+                customerIds.length > 0 ? supabase.from('customers').select('*').in('id', customerIds) : { data: [] },
+                convIds.length > 0 ? supabase.from('leads').select('*').in('conversationId', convIds) : { data: [] },
+                convIds.length > 0 ? supabase.from('messages').select('conversationId') : { data: [] }
+            ]);
+
+            const customerMap = (custRes.data || []).reduce((acc, c) => ({ ...acc, [c.id]: c }), {});
+            const leadMap = (leadsRes.data || []).reduce((acc, l) => ({ ...acc, [l.conversationId]: l }), {});
+            const msgCountMap = {};
+            (msgsRes.data || []).forEach(m => {
+                msgCountMap[m.conversationId] = (msgCountMap[m.conversationId] || 0) + 1;
+            });
+
+            const combined = (convData || []).map(conv => ({
+                ...conv,
+                customer: customerMap[conv.customerId] || { name: 'Customer' },
+                lead: leadMap[conv.id] || null,
+                _count: { messages: msgCountMap[conv.id] || 0 }
+            }));
+
+            // Filter by search query if set
+            const filtered = searchQuery
+                ? combined.filter(c =>
+                    (c.customer?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (c.channel || '').toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                : combined;
+
+            setConversations(filtered);
+
+            // Auto-select first conversation if none selected
+            if (filtered.length > 0 && !selectedConversation) {
+                openConversation(filtered[0]);
+            }
         } catch (error) {
-            console.error('Error fetching conversations:', error);
+            console.error('Error fetching conversations from Supabase:', error);
+            // Fallback to service if Supabase direct query fails
+            try {
+                const params = { limit: 50 };
+                if (statusFilter !== 'ALL') params.status = statusFilter;
+                if (searchQuery) params.search = searchQuery;
+                const data = await leadflowService.getConversations(params);
+                setConversations(data.items || []);
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -55,10 +113,22 @@ function ConversationsPage() {
         setSelectedConversation(conv);
         setLoadingMessages(true);
         try {
-            const data = await leadflowService.getConversation(conv.id);
-            setMessages(data);
+            const { data: msgData, error } = await supabase
+                .from('messages')
+                .select('*')
+                .eq('conversationId', conv.id)
+                .order('createdAt', { ascending: true });
+
+            if (error) throw error;
+            setMessages({ messages: msgData || [] });
         } catch (error) {
-            console.error('Error fetching conversation:', error);
+            console.error('Error fetching messages from Supabase:', error);
+            try {
+                const data = await leadflowService.getConversation(conv.id);
+                setMessages(data);
+            } catch (err) {
+                console.error('Service fetch error:', err);
+            }
         } finally {
             setLoadingMessages(false);
         }
@@ -66,13 +136,14 @@ function ConversationsPage() {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            await leadflowService.updateConversationStatus(id, newStatus);
+            await supabase.from('conversations').update({ status: newStatus }).eq('id', id);
             fetchConversations();
             if (selectedConversation?.id === id) {
                 setSelectedConversation(prev => ({ ...prev, status: newStatus }));
             }
         } catch (error) {
             console.error('Error updating status:', error);
+            await leadflowService.updateConversationStatus(id, newStatus);
         }
     };
 
@@ -81,15 +152,47 @@ function ConversationsPage() {
         const messageText = newMessage.trim();
         setNewMessage('');
         setSendingMessage(true);
+
         try {
-            const result = await leadflowService.sendMessage(selectedConversation.id, messageText);
-            // Refresh messages to show the new exchange
-            const data = await leadflowService.getConversation(selectedConversation.id);
-            setMessages(data);
-            // Refresh conversation list too (lastMessageAt changed)
+            const now = new Date().toISOString();
+            // Insert human reply into Supabase
+            const { error: insertError } = await supabase
+                .from('messages')
+                .insert({
+                    conversationId: selectedConversation.id,
+                    sender: 'HUMAN',
+                    content: messageText,
+                    contentType: 'text',
+                    createdAt: now
+                });
+
+            if (insertError) throw insertError;
+
+            // Update conversation lastMessageAt
+            await supabase
+                .from('conversations')
+                .update({ lastMessageAt: now })
+                .eq('id', selectedConversation.id);
+
+            // Re-fetch conversation messages
+            const { data: msgData } = await supabase
+                .from('messages')
+                .select('*')
+                .eq('conversationId', selectedConversation.id)
+                .order('createdAt', { ascending: true });
+
+            setMessages({ messages: msgData || [] });
             fetchConversations();
         } catch (error) {
             console.error('Error sending message:', error);
+            try {
+                await leadflowService.sendMessage(selectedConversation.id, messageText);
+                const data = await leadflowService.getConversation(selectedConversation.id);
+                setMessages(data);
+                fetchConversations();
+            } catch (err) {
+                console.error('Service error:', err);
+            }
         } finally {
             setSendingMessage(false);
         }
@@ -344,29 +447,49 @@ function ConversationsPage() {
                         {/* Messages */}
                         <div ref={messagesEndRef} style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
                             {messages?.messages?.length > 0 ? (
-                                messages.messages.map((msg, idx) => (
-                                    <div key={msg.id || idx} style={{
-                                        display: 'flex', justifyContent: msg.sender === 'AI' || msg.sender === 'BOT' ? 'flex-start' : 'flex-end',
-                                        marginBottom: '16px'
-                                    }}>
-                                        <div style={{
-                                            maxWidth: '70%', padding: '12px 16px', borderRadius: '12px',
-                                            background: msg.sender === 'AI' || msg.sender === 'BOT'
-                                                ? 'var(--bg-surface, #1E2025)'
-                                                : 'var(--brand-gradient)',
-                                            border: msg.sender === 'AI' || msg.sender === 'BOT'
-                                                ? '1px solid var(--border-subtle, #2a2a2a)' : 'none',
-                                            color: msg.sender === 'AI' || msg.sender === 'BOT'
-                                                ? 'var(--text-primary, #F5F6FA)' : '#fff',
-                                            fontSize: '13px', lineHeight: 1.5
+                                messages.messages.map((msg, idx) => {
+                                    const isCustomer = msg.sender === 'CUSTOMER';
+                                    const isAI = msg.sender === 'AI' || msg.sender === 'BOT';
+                                    const isOutgoing = !isCustomer && !isAI;
+
+                                    return (
+                                        <div key={msg.id || idx} style={{
+                                            display: 'flex',
+                                            justifyContent: isOutgoing ? 'flex-end' : 'flex-start',
+                                            marginBottom: '16px'
                                         }}>
-                                            <div style={{ fontSize: '10px', color: msg.sender === 'AI' || msg.sender === 'BOT' ? 'var(--text-muted, #666)' : 'rgba(255,255,255,0.7)', marginBottom: '4px', fontWeight: 600 }}>
-                                                {msg.sender === 'AI' ? 'AI Assistant' : msg.sender === 'BOT' ? 'Bot' : msg.sender === 'CUSTOMER' ? selectedConversation.customer?.name || 'Customer' : msg.sender === 'HUMAN' ? 'You' : 'Agent'}
+                                            <div style={{
+                                                maxWidth: '75%', padding: '12px 16px', borderRadius: '12px',
+                                                background: isOutgoing
+                                                    ? 'var(--brand-gradient, #805BE7)'
+                                                    : isAI
+                                                        ? 'rgba(128, 91, 231, 0.12)'
+                                                        : 'var(--bg-surface, #1E2025)',
+                                                border: isOutgoing
+                                                    ? 'none'
+                                                    : isAI
+                                                        ? '1px solid rgba(128, 91, 231, 0.3)'
+                                                        : '1px solid var(--border-subtle, #2a2a2a)',
+                                                color: isOutgoing ? '#fff' : 'var(--text-primary, #F5F6FA)',
+                                                fontSize: '13px', lineHeight: 1.5
+                                            }}>
+                                                <div style={{
+                                                    fontSize: '10px',
+                                                    color: isOutgoing
+                                                        ? 'rgba(255,255,255,0.75)'
+                                                        : isAI
+                                                            ? '#9B7DF0'
+                                                            : 'var(--text-muted, #888)',
+                                                    marginBottom: '4px',
+                                                    fontWeight: 600
+                                                }}>
+                                                    {isAI ? '🤖 AI Assistant' : isCustomer ? (selectedConversation.customer?.name || 'Customer') : '👤 You (Sales Rep)'}
+                                                </div>
+                                                {msg.content}
                                             </div>
-                                            {msg.content}
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted, #555)' }}>
                                     No messages yet. Send a message below to start the conversation.

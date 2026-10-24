@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Search, LayoutDashboard, Loader2, Sparkles } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 import dashboardService from '../services/dashboardService';
 import DashboardCard from '../components/analytics/DashboardCard';
 import DashboardForm from '../components/analytics/DashboardForm';
@@ -34,10 +35,22 @@ const DashboardsPage = () => {
     const fetchDashboards = async () => {
         try {
             setLoading(true);
-            const data = await dashboardService.getMyDashboards();
-            setDashboards(data);
+            // 1. Fetch from Supabase dashboards table
+            const { data, error } = await supabase
+                .from('dashboards')
+                .select('*')
+                .order('createdAt', { ascending: false });
+
+            if (error) throw error;
+            setDashboards(data || []);
         } catch (error) {
-            console.error('Error fetching dashboards:', error);
+            console.error('Error fetching dashboards from Supabase:', error);
+            try {
+                const data = await dashboardService.getMyDashboards();
+                setDashboards(data || []);
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -45,27 +58,59 @@ const DashboardsPage = () => {
 
     const handleCreateDashboard = async (formData) => {
         try {
-            await dashboardService.createDashboard(formData);
+            const orgId = '4d01ebeb-a684-4e84-bb66-a4ed5c76f42c';
+            const userId = 'c4c51d3f-9758-4728-b95f-9266e0708889';
+            const now = new Date().toISOString();
+            const { error } = await supabase
+                .from('dashboards')
+                .insert({
+                    organizationId: orgId,
+                    userId: userId,
+                    title: formData.title,
+                    description: formData.description || '',
+                    sqlQuery: formData.sqlQuery || '',
+                    chartConfig: formData.chartConfig || {},
+                    isPublic: true,
+                    createdAt: now,
+                    updatedAt: now
+                });
+
+            if (error) throw error;
             fetchDashboards();
             setShowCreateModal(false);
         } catch (error) {
-            throw error;
+            console.error('Error creating dashboard in Supabase:', error);
+            try {
+                await dashboardService.createDashboard(formData);
+                fetchDashboards();
+                setShowCreateModal(false);
+            } catch (err) {
+                console.error('Service fallback error:', err);
+                throw err;
+            }
         }
     };
 
     const handleDeleteDashboard = async (id) => {
         if (window.confirm(t('dashboardsPage.confirmDelete'))) {
             try {
-                await dashboardService.deleteDashboard(id);
+                const { error } = await supabase.from('dashboards').delete().eq('id', id);
+                if (error) throw error;
                 fetchDashboards();
             } catch (error) {
-                console.error('Error deleting dashboard:', error);
+                console.error('Error deleting dashboard from Supabase:', error);
+                try {
+                    await dashboardService.deleteDashboard(id);
+                    fetchDashboards();
+                } catch (err) {
+                    console.error('Service fallback error:', err);
+                }
             }
         }
     };
 
     const filteredDashboards = dashboards.filter(dash =>
-        dash.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (dash.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (dash.description && dash.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 

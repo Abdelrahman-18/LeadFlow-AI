@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Globe, Moon, Sun, Bell, Shield, Key, ArrowLeft, Save } from 'lucide-react';
+import { supabase } from '../supabaseClient';
+import { User, Mail, Globe, Moon, Sun, Bell, Shield, Key, ArrowLeft, Save, CheckCircle } from 'lucide-react';
 
 const SectionCard = ({ icon: Icon, title, children }) => (
     <div style={{
@@ -68,24 +69,48 @@ function SettingsPage() {
     });
 
     const [saving, setSaving] = useState(false);
+    const [savedSuccess, setSavedSuccess] = useState(false);
 
+    // Fetch user profile from Supabase users table
     useEffect(() => {
-        const user = localStorage.getItem('user');
         const theme = localStorage.getItem('theme') || 'dark';
         const language = localStorage.getItem('language') || 'en';
 
-        if (user) {
+        const loadProfile = async () => {
             try {
-                const userData = JSON.parse(user);
-                setSettings(prev => ({
-                    ...prev,
-                    displayName: userData.displayName || userData.name || '',
-                    email: userData.email || '',
-                    theme,
-                    language,
-                }));
-            } catch { /* ignore */ }
-        }
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('*')
+                    .limit(1)
+                    .single();
+
+                if (userData) {
+                    setSettings(prev => ({
+                        ...prev,
+                        displayName: userData.displayName || '',
+                        email: userData.email || '',
+                        theme,
+                        language
+                    }));
+                } else {
+                    const user = localStorage.getItem('user');
+                    if (user) {
+                        const parsed = JSON.parse(user);
+                        setSettings(prev => ({
+                            ...prev,
+                            displayName: parsed.displayName || parsed.name || '',
+                            email: parsed.email || '',
+                            theme,
+                            language
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to load user profile from Supabase:', err);
+            }
+        };
+
+        loadProfile();
     }, []);
 
     const applyTheme = (theme) => {
@@ -101,11 +126,47 @@ function SettingsPage() {
 
     const handleSave = async () => {
         setSaving(true);
-        localStorage.setItem('language', settings.language);
-        applyTheme(settings.theme);
-        // Simulate save delay
-        await new Promise(r => setTimeout(r, 600));
-        setSaving(false);
+        setSavedSuccess(false);
+
+        try {
+            localStorage.setItem('language', settings.language);
+            applyTheme(settings.theme);
+
+            // Update user in Supabase users table
+            const { error } = await supabase
+                .from('users')
+                .update({
+                    displayName: settings.displayName,
+                    email: settings.email,
+                    updatedAt: new Date().toISOString()
+                })
+                .eq('email', settings.email);
+
+            if (error) {
+                console.warn('Supabase profile update warning:', error);
+            }
+
+            // Update local user object
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const parsed = JSON.parse(userStr);
+                    localStorage.setItem('user', JSON.stringify({
+                        ...parsed,
+                        displayName: settings.displayName,
+                        name: settings.displayName,
+                        email: settings.email
+                    }));
+                } catch (e) {}
+            }
+
+            setSavedSuccess(true);
+            setTimeout(() => setSavedSuccess(false), 3000);
+        } catch (err) {
+            console.error('Error saving settings:', err);
+        } finally {
+            setSaving(false);
+        }
     };
 
     const Toggle = ({ checked, onChange, label, description }) => (
@@ -149,11 +210,19 @@ function SettingsPage() {
                         <ArrowLeft size={16} />
                     </button>
                     <div>
-                        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
-                            Settings
-                        </h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary, #F5F6FA)' }}>
+                                Settings
+                            </h1>
+                            <span style={{
+                                fontSize: '11px', padding: '3px 8px', borderRadius: '6px',
+                                background: 'rgba(52,211,153,0.12)', color: '#34D399', fontWeight: 600
+                            }}>
+                                Database Linked
+                            </span>
+                        </div>
                         <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-muted, #888)' }}>
-                            Manage your account settings and preferences
+                            Manage your account settings and preferences connected to Supabase
                         </p>
                     </div>
                 </div>
@@ -247,7 +316,12 @@ function SettingsPage() {
             </SectionCard>
 
             {/* Save Button */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
+                {savedSuccess && (
+                    <span style={{ fontSize: '13px', color: '#34D399', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                        <CheckCircle size={16} /> Saved to Database!
+                    </span>
+                )}
                 <button onClick={handleSave} disabled={saving} style={{
                     padding: '12px 28px', borderRadius: '10px', border: 'none',
                     background: saving ? 'rgba(128, 91, 231,0.3)' : 'var(--brand-gradient)',

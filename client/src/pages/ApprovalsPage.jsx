@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../supabaseClient';
 import leadflowService from '../services/leadflowService';
 import { CheckSquare, Search, Loader2, CheckCircle, XCircle, Clock, AlertTriangle, User, MessageSquare, ChevronDown, RefreshCw } from 'lucide-react';
 
@@ -20,7 +21,7 @@ function ApprovalsPage() {
     const { t } = useTranslation();
     const [approvals, setApprovals] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [statusFilter, setStatusFilter] = useState('PENDING');
+    const [statusFilter, setStatusFilter] = useState('ALL');
     const [processing, setProcessing] = useState(null);
     const [reasonModal, setReasonModal] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
@@ -28,12 +29,93 @@ function ApprovalsPage() {
     const fetchApprovals = async () => {
         try {
             setLoading(true);
-            const params = { limit: 50 };
-            if (statusFilter !== 'ALL') params.status = statusFilter;
-            const data = await leadflowService.getApprovals(params);
-            setApprovals(data.items || []);
+
+            // 1. Fetch approvals from Supabase
+            let query = supabase
+                .from('approvals')
+                .select('*')
+                .order('createdAt', { ascending: false });
+
+            if (statusFilter !== 'ALL') {
+                query = query.eq('status', statusFilter);
+            }
+
+            const { data: appData, error: appError } = await query;
+            if (appError) throw appError;
+
+            // 2. Fetch associated ai_actions, conversations, and customers
+            const actionIds = (appData || []).map(a => a.aiActionId).filter(Boolean);
+            let actionMap = {};
+            let convMap = {};
+            let customerMap = {};
+            let userMap = {};
+
+            if (actionIds.length > 0) {
+                const { data: actionsData } = await supabase.from('ai_actions').select('*').in('id', actionIds);
+                if (actionsData) {
+                    actionMap = actionsData.reduce((acc, a) => ({ ...acc, [a.id]: a }), {});
+                    const convIds = [...new Set(actionsData.map(a => a.conversationId).filter(Boolean))];
+                    if (convIds.length > 0) {
+                        const { data: convData } = await supabase.from('conversations').select('*').in('id', convIds);
+                        if (convData) {
+                            convMap = convData.reduce((acc, c) => ({ ...acc, [c.id]: c }), {});
+                            const customerIds = [...new Set(convData.map(c => c.customerId).filter(Boolean))];
+                            if (customerIds.length > 0) {
+                                const { data: custData } = await supabase.from('customers').select('*').in('id', customerIds);
+                                if (custData) {
+                                    customerMap = custData.reduce((acc, c) => ({ ...acc, [c.id]: c }), {});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Fetch approver users
+            const approverIds = [...new Set((appData || []).map(a => a.approvedBy).filter(Boolean))];
+            if (approverIds.length > 0) {
+                const { data: userData } = await supabase.from('users').select('id, displayName').in('id', approverIds);
+                if (userData) {
+                    userMap = userData.reduce((acc, u) => ({ ...acc, [u.id]: u }), {});
+                }
+            }
+
+            const combined = (appData || []).map(app => {
+                const aiAction = actionMap[app.aiActionId] || null;
+                const conv = aiAction ? convMap[aiAction.conversationId] : null;
+                const customer = conv ? customerMap[conv.customerId] : null;
+                const approver = app.approvedBy ? userMap[app.approvedBy] : null;
+
+                return {
+                    ...app,
+                    approver,
+                    aiAction: aiAction ? {
+                        ...aiAction,
+                        description: app.reason || (typeof aiAction.output === 'string' ? aiAction.output : (aiAction.output?.reason || aiAction.actionType)),
+                        conversation: conv ? {
+                            ...conv,
+                            customer: customer || { name: 'Customer' }
+                        } : null
+                    } : {
+                        actionType: 'Manager Approval',
+                        description: app.reason || 'AI action awaiting review',
+                        riskLevel: 'MEDIUM',
+                        conversation: null
+                    }
+                };
+            });
+
+            setApprovals(combined);
         } catch (error) {
-            console.error('Error fetching approvals:', error);
+            console.error('Error fetching approvals from Supabase:', error);
+            try {
+                const params = { limit: 50 };
+                if (statusFilter !== 'ALL') params.status = statusFilter;
+                const data = await leadflowService.getApprovals(params);
+                setApprovals(data.items || []);
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -46,10 +128,30 @@ function ApprovalsPage() {
     const handleApprove = async (id) => {
         setProcessing(id);
         try {
-            await leadflowService.processApproval(id, 'APPROVED');
+            const now = new Date().toISOString();
+            const { error } = await supabase
+                .from('approvals')
+                .update({
+                    status: 'APPROVED',
+                    resolvedAt: now
+                })
+                .eq('id', id);
+
+            if (error) throw error;
+
+            const item = approvals.find(a => a.id === id);
+            if (item?.aiActionId) {
+                await supabase
+                    .from('ai_actions')
+                    .update({ status: 'APPROVED', executedAt: now })
+                    .eq('id', item.aiActionId);
+            }
+
             fetchApprovals();
         } catch (error) {
             console.error('Error approving:', error);
+            await leadflowService.processApproval(id, 'APPROVED');
+            fetchApprovals();
         } finally {
             setProcessing(null);
         }
@@ -65,10 +167,31 @@ function ApprovalsPage() {
         setProcessing(id);
         setReasonModal(null);
         try {
-            await leadflowService.processApproval(id, 'REJECTED', rejectReason || 'No reason provided');
+            const now = new Date().toISOString();
+            const { error } = await supabase
+                .from('approvals')
+                .update({
+                    status: 'REJECTED',
+                    reason: rejectReason || 'Rejected by manager',
+                    resolvedAt: now
+                })
+                .eq('id', id);
+
+            if (error) throw error;
+
+            const item = approvals.find(a => a.id === id);
+            if (item?.aiActionId) {
+                await supabase
+                    .from('ai_actions')
+                    .update({ status: 'REJECTED' })
+                    .eq('id', item.aiActionId);
+            }
+
             fetchApprovals();
         } catch (error) {
             console.error('Error rejecting:', error);
+            await leadflowService.processApproval(id, 'REJECTED', rejectReason || 'No reason provided');
+            fetchApprovals();
         } finally {
             setProcessing(null);
         }

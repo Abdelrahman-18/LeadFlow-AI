@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../supabaseClient';
 import leadflowService from '../services/leadflowService';
-import { TrendingUp, Search, Filter, DollarSign, Target, Users, Zap, Loader2, ChevronDown, BarChart3 } from 'lucide-react';
+import { TrendingUp, Search, Filter, DollarSign, Target, Users, Zap, Loader2, ChevronDown, BarChart3, RefreshCw } from 'lucide-react';
 
 const STAGE_COLORS = {
     OPEN: { bg: 'rgba(128, 91, 231,0.12)', text: '#9B7DF0', label: 'Open' },
@@ -21,13 +22,72 @@ function OpportunitiesPage() {
     const fetchOpportunities = async () => {
         try {
             setLoading(true);
-            const params = { limit: 50 };
-            if (stageFilter !== 'ALL') params.status = stageFilter;
-            const data = await leadflowService.getOpportunities(params);
-            setOpportunities(data.items || []);
-            setSummary(data.summary || { totalPotentialRevenue: 0, openCount: 0 });
+
+            // 1. Fetch revenue_opportunities from Supabase
+            let query = supabase
+                .from('revenue_opportunities')
+                .select('*')
+                .order('createdAt', { ascending: false });
+
+            if (stageFilter !== 'ALL') {
+                query = query.eq('status', stageFilter);
+            }
+
+            const { data: oppData, error: oppError } = await query;
+            if (oppError) throw oppError;
+
+            // 2. Fetch associated leads and customers
+            const leadIds = (oppData || []).map(o => o.leadId).filter(Boolean);
+            let leadMap = {};
+            let customerMap = {};
+
+            if (leadIds.length > 0) {
+                const { data: leadsData } = await supabase.from('leads').select('*').in('id', leadIds);
+                if (leadsData) {
+                    leadMap = leadsData.reduce((acc, l) => ({ ...acc, [l.id]: l }), {});
+                    const customerIds = [...new Set(leadsData.map(l => l.customerId).filter(Boolean))];
+                    if (customerIds.length > 0) {
+                        const { data: custData } = await supabase.from('customers').select('*').in('id', customerIds);
+                        if (custData) {
+                            customerMap = custData.reduce((acc, c) => ({ ...acc, [c.id]: c }), {});
+                        }
+                    }
+                }
+            }
+
+            const combined = (oppData || []).map(opp => {
+                const lead = leadMap[opp.leadId] || null;
+                const customer = lead ? customerMap[lead.customerId] : null;
+                return {
+                    ...opp,
+                    name: opp.title || opp.name,
+                    winProbability: opp.leadScore || lead?.leadScore || 0,
+                    lead: {
+                        ...lead,
+                        customer: customer || { name: 'Customer' }
+                    }
+                };
+            });
+
+            // 3. Calculate pipeline summary across all opportunities
+            const { data: allOpps } = await supabase.from('revenue_opportunities').select('potentialRevenue, status');
+            const totalRev = (allOpps || []).reduce((sum, o) => sum + (Number(o.potentialRevenue) || 0), 0);
+            const openCount = (allOpps || []).filter(o => ['OPEN', 'IN_PROGRESS'].includes((o.status || '').toUpperCase())).length;
+
+            setOpportunities(combined);
+            setSummary({ totalPotentialRevenue: totalRev, openCount });
         } catch (error) {
-            console.error('Error fetching opportunities:', error);
+            console.error('Error fetching opportunities from Supabase:', error);
+            // Fallback to service if needed
+            try {
+                const params = { limit: 50 };
+                if (stageFilter !== 'ALL') params.status = stageFilter;
+                const data = await leadflowService.getOpportunities(params);
+                setOpportunities(data.items || []);
+                setSummary(data.summary || { totalPotentialRevenue: 0, openCount: 0 });
+            } catch (err) {
+                console.error('Service fallback error:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -43,7 +103,7 @@ function OpportunitiesPage() {
 
     const filtered = opportunities.filter(o =>
         (o.lead?.customer?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (o.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+        (o.name || o.title || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const stages = ['ALL', 'OPEN', 'IN_PROGRESS', 'WON', 'LOST'];
