@@ -8,6 +8,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.118.0",
         "axios": "^1.6.2",
         "i18next": "^23.7.6",
         "leaflet": "^1.9.4",

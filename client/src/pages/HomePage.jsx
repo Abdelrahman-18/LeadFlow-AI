@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 import leadflowService from '../services/leadflowService';
 import {
     MessageSquare, DollarSign, Target, CheckSquare,
     Activity, Zap, ArrowRight, Loader2, Calendar, ChevronDown,
-    AlertTriangle, AlertCircle
+    AlertTriangle, AlertCircle, RefreshCw
 } from 'lucide-react';
 
 // Design-system tokens (fallbacks match the dark palette in index.css)
@@ -15,60 +16,168 @@ const TEXT_SECONDARY = 'var(--text-secondary, #A9ADB8)';
 const PRIMARY = 'var(--primary, #805BE7)';
 const ACCENT_YELLOW = 'var(--accent-yellow, #E6B84D)';
 
+// Currency formatter for Egyptian Pounds (EGP)
+const formatEGP = (amount) => {
+    const num = Number(amount) || 0;
+    return `EGP ${num.toLocaleString('en-US', {
+        minimumFractionDigits: num % 1 !== 0 ? 2 : 0,
+        maximumFractionDigits: 2
+    })}`;
+};
+
 function HomePage() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [timeRange, setTimeRange] = useState('This Month');
+    const [error, setError] = useState(null);
+    const [timeRange, setTimeRange] = useState('All Time');
+
+    // 4 metric values states
+    const [totalConversations, setTotalConversations] = useState(0);
+    const [pipelineRevenue, setPipelineRevenue] = useState(0);
+    const [winRate, setWinRate] = useState(0);
+    const [pendingApprovals, setPendingApprovals] = useState(0);
+
+    // Fetch and aggregate live metrics from Supabase database
+    const fetchDashboardData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            // Fetch concurrently from conversations, revenue_opportunities, approvals
+            const [convRes, oppRes, appRes] = await Promise.all([
+                supabase
+                    .from('conversations')
+                    .select('*', { count: 'exact', head: true }),
+                supabase
+                    .from('revenue_opportunities')
+                    .select('potentialRevenue, status'),
+                supabase
+                    .from('approvals')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'PENDING')
+            ]);
+
+            if (convRes.error) throw convRes.error;
+            if (oppRes.error) throw oppRes.error;
+            if (appRes.error) throw appRes.error;
+
+            // 1. Total Conversations count
+            const convCount = convRes.count ?? 0;
+            setTotalConversations(convCount);
+
+            // 2. Pipeline Revenue (sum of opportunity potentialRevenue in EGP)
+            const opportunities = oppRes.data || [];
+            const revenueSum = opportunities.reduce(
+                (sum, opp) => sum + (Number(opp.potentialRevenue) || 0),
+                0
+            );
+            setPipelineRevenue(revenueSum);
+
+            // 3. Avg. Win Rate (% of won opportunities)
+            const wonCount = opportunities.filter((opp) => {
+                const status = (opp.status || '').toUpperCase();
+                return status === 'WON' || status === 'CLOSED_WON';
+            }).length;
+            const calculatedWinRate = opportunities.length > 0
+                ? Math.round((wonCount / opportunities.length) * 100)
+                : 0;
+            setWinRate(calculatedWinRate);
+
+            // 4. Pending Approvals count (status = PENDING)
+            const pendingCount = appRes.count ?? 0;
+            setPendingApprovals(pendingCount);
+
+            // Fetch recent activity fallback from Supabase if Express backend is offline
+            try {
+                const { data: convData } = await supabase
+                    .from('conversations')
+                    .select('id, channel, status, createdAt, customerId')
+                    .order('createdAt', { ascending: false })
+                    .limit(5);
+
+                if (convData && convData.length > 0) {
+                    const customerIds = [...new Set(convData.map((c) => c.customerId).filter(Boolean))];
+                    let customerMap = {};
+                    if (customerIds.length > 0) {
+                        const { data: custData } = await supabase
+                            .from('customers')
+                            .select('id, name')
+                            .in('id', customerIds);
+                        if (custData) {
+                            customerMap = custData.reduce((acc, c) => ({ ...acc, [c.id]: c.name }), {});
+                        }
+                    }
+
+                    setDashboard((prev) => ({
+                        ...prev,
+                        recentActivity: convData.map((c) => ({
+                            id: c.id,
+                            customerName: customerMap[c.customerId] || `Customer (${c.channel || 'Direct'})`,
+                            message: `Status: ${c.status || 'Active'} • Channel: ${c.channel || 'Direct'}`,
+                            time: c.createdAt
+                        }))
+                    }));
+                }
+            } catch (fallbackErr) {
+                console.warn('Could not populate fallback recent activity:', fallbackErr);
+            }
+        } catch (err) {
+            console.error('Error fetching Supabase metrics:', err);
+            setError(err.message || 'Failed to connect to Supabase database. Please check your credentials and connection.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
-        if (userData) setUser(JSON.parse(userData));
-
-        const fetchDashboard = async () => {
+        if (userData) {
             try {
-                const data = await leadflowService.getDashboard();
-                setDashboard(data);
-            } catch (error) {
-                console.error('Error fetching dashboard:', error);
-            } finally {
-                setLoading(false);
+                setUser(JSON.parse(userData));
+            } catch (e) {
+                console.error('Error parsing user data:', e);
             }
-        };
+        }
 
-        fetchDashboard();
-    }, []);
+        fetchDashboardData();
+
+        // Optionally fetch extra dashboard data from service if available
+        leadflowService.getDashboard()
+            .then((data) => {
+                if (data?.recentActivity?.length) {
+                    setDashboard((prev) => ({ ...prev, recentActivity: data.recentActivity }));
+                }
+            })
+            .catch(() => {
+                // Silently ignore if backend server is not running
+            });
+    }, [fetchDashboardData]);
 
     // Interactive 4-card metric grid configuration
     const metricCards = [
         {
             label: 'Total Conversations',
-            value: dashboard?.metrics?.totalConversations != null
-                ? dashboard.metrics.totalConversations.toLocaleString()
-                : '0',
+            value: totalConversations.toLocaleString(),
             icon: MessageSquare,
             path: '/conversations',
         },
         {
             label: 'Pipeline Revenue',
-            value: dashboard?.metrics?.potentialRevenue != null
-                ? `EGP ${Number(dashboard.metrics.potentialRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                : 'EGP 0.00',
+            value: formatEGP(pipelineRevenue),
             icon: DollarSign,
             path: '/opportunities',
         },
         {
             label: 'Avg. Win Rate',
-            value: dashboard?.metrics?.winRate != null
-                ? `${dashboard.metrics.winRate}%`
-                : '0%',
+            value: `${winRate}%`,
             icon: Target,
             path: '/analytics',
         },
         {
             label: 'Pending Approvals',
-            value: String(dashboard?.metrics?.pendingApprovals ?? 0),
+            value: String(pendingApprovals),
             trend: 'Action needed',
             icon: CheckSquare,
             path: '/approvals',
@@ -143,11 +252,31 @@ function HomePage() {
             </div>
 
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-                    <Loader2 className="spin" size={32} style={{ color: PRIMARY }} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px', gap: '14px' }}>
+                    <Loader2 className="spin" size={34} style={{ color: PRIMARY }} />
+                    <span style={{ fontSize: '13px', color: TEXT_SECONDARY }}>Fetching live Supabase metrics...</span>
                 </div>
             ) : (
                 <>
+                    {error && (
+                        <div className="lf-error-banner" role="alert">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <AlertCircle size={18} style={{ color: '#EF4444', flexShrink: 0 }} />
+                                <span>
+                                    <strong>Database Notice:</strong> {error}
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={fetchDashboardData}
+                                className="lf-retry-btn"
+                            >
+                                <RefreshCw size={13} />
+                                <span>Retry</span>
+                            </button>
+                        </div>
+                    )}
+
                     {/* Interactive 4-Card Metric Grid */}
                     <div className="lf-metric-grid">
                         {metricCards.map((card) => {
@@ -337,6 +466,42 @@ function HomePage() {
                 .lf-time-filter-select option {
                     background: #1E2025;
                     color: #F5F6FA;
+                }
+
+                /* Error Alert Banner */
+                .lf-error-banner {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+                    padding: 12px 18px;
+                    border-radius: 12px;
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid rgba(239, 68, 68, 0.35);
+                    color: #F87171;
+                    font-size: 13px;
+                    margin-bottom: 22px;
+                    flex-wrap: wrap;
+                }
+                .lf-retry-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 6px 14px;
+                    border-radius: 8px;
+                    background: rgba(239, 68, 68, 0.2);
+                    border: 1px solid rgba(239, 68, 68, 0.5);
+                    color: #FFFFFF;
+                    font-size: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+                    font-family: inherit;
+                    white-space: nowrap;
+                }
+                .lf-retry-btn:hover {
+                    background: #EF4444;
+                    color: #FFFFFF;
                 }
 
                 /* 4-Card Metric Grid */
