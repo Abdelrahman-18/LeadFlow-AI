@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import leadflowService from '../services/leadflowService';
 import {
-    TrendingUp, MessageSquare, Target, Users,
-    AlertCircle, Loader2, Activity, Zap, ArrowRight, Bot
+    MessageSquare, DollarSign, Target, CheckSquare,
+    Activity, Zap, ArrowRight, Loader2, Calendar, ChevronDown,
+    AlertTriangle, AlertCircle
 } from 'lucide-react';
 
 // Design-system tokens (fallbacks match the dark palette in index.css)
@@ -19,6 +20,7 @@ function HomePage() {
     const [user, setUser] = useState(null);
     const [dashboard, setDashboard] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [timeRange, setTimeRange] = useState('This Month');
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -38,46 +40,106 @@ function HomePage() {
         fetchDashboard();
     }, []);
 
-    const pendingApprovals = dashboard?.metrics?.pendingApprovals || 0;
-
-    // Top responsive metric cards grid
-    const summaryCards = [
+    // Interactive 4-card metric grid configuration
+    const metricCards = [
         {
             label: 'Total Conversations',
-            value: (dashboard?.metrics?.totalConversations || 0).toLocaleString(),
+            value: dashboard?.metrics?.totalConversations != null
+                ? dashboard.metrics.totalConversations.toLocaleString()
+                : '0',
             icon: MessageSquare,
             path: '/conversations',
         },
         {
-            label: 'Revenue Leads',
-            value: (dashboard?.metrics?.totalLeads || 0).toLocaleString(),
-            icon: TrendingUp,
+            label: 'Pipeline Revenue',
+            value: dashboard?.metrics?.potentialRevenue != null
+                ? `EGP ${Number(dashboard.metrics.potentialRevenue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                : 'EGP 0.00',
+            icon: DollarSign,
             path: '/opportunities',
         },
         {
-            label: 'AI Actions',
-            value: (dashboard?.metrics?.totalActions || 0).toLocaleString(),
-            icon: Bot,
+            label: 'Avg. Win Rate',
+            value: dashboard?.metrics?.winRate != null
+                ? `${dashboard.metrics.winRate}%`
+                : '0%',
+            icon: Target,
+            path: '/analytics',
+        },
+        {
+            label: 'Pending Approvals',
+            value: String(dashboard?.metrics?.pendingApprovals ?? 0),
+            trend: 'Action needed',
+            icon: CheckSquare,
             path: '/approvals',
-            note: pendingApprovals > 0
-                ? `${pendingApprovals} pending approval${pendingApprovals !== 1 ? 's' : ''}`
-                : null,
+        },
+    ];
+
+    // AI Insights & Alerts Feed
+    const alertsFeed = [
+        {
+            id: 'alert-1',
+            text: "High closing intent detected in 'TechFlow' conversation.",
+            actionText: 'Review Transcript',
+            path: '/conversations',
+            icon: Zap,
+            iconColor: '#10B981',
+            dotColor: '#10B981',
+            bgIcon: 'rgba(16, 185, 129, 0.12)',
+        },
+        {
+            id: 'alert-2',
+            text: 'Sentiment dropped in 2 recent chats. Leads at risk of slipping away.',
+            actionText: 'Intervene',
+            path: '/conversations',
+            icon: AlertTriangle,
+            iconColor: ACCENT_YELLOW,
+            dotColor: ACCENT_YELLOW,
+            bgIcon: 'rgba(230, 184, 77, 0.12)',
+        },
+        {
+            id: 'alert-3',
+            text: '2 high-value proposals require your immediate approval.',
+            actionText: 'Review Approvals',
+            path: '/approvals',
+            icon: AlertCircle,
+            iconColor: '#EF4444',
+            dotColor: '#EF4444',
+            bgIcon: 'rgba(239, 68, 68, 0.12)',
         },
     ];
 
     return (
         <div style={{ padding: '24px 32px', maxWidth: '1200px', margin: '0 auto' }}>
-            {/* Welcome Header */}
-            <div style={{ marginBottom: '28px' }}>
-                <h1 style={{
-                    fontSize: '26px', fontWeight: 700, margin: '0 0 6px 0',
-                    color: TEXT_PRIMARY
-                }}>
-                    Welcome back{user ? `, ${user.displayName || user.name}` : ''}
-                </h1>
-                <p style={{ margin: 0, fontSize: '14px', color: TEXT_SECONDARY }}>
-                    Here's your revenue operations overview
-                </p>
+            {/* Header: Greeting + Global Time Context Filter */}
+            <div className="lf-header-row">
+                <div>
+                    <h1 style={{
+                        fontSize: '26px', fontWeight: 700, margin: '0 0 6px 0',
+                        color: TEXT_PRIMARY
+                    }}>
+                        Welcome back{user ? `, ${user.displayName || user.name}` : ''}
+                    </h1>
+                    <p style={{ margin: 0, fontSize: '14px', color: TEXT_SECONDARY }}>
+                        Here's your revenue operations overview
+                    </p>
+                </div>
+
+                {/* Styled Date Filter Dropdown */}
+                <div className="lf-time-filter-wrapper">
+                    <Calendar size={15} style={{ color: TEXT_SECONDARY, pointerEvents: 'none' }} />
+                    <select
+                        value={timeRange}
+                        onChange={(e) => setTimeRange(e.target.value)}
+                        className="lf-time-filter-select"
+                        aria-label="Time context filter"
+                    >
+                        <option value="Last 7 Days">Last 7 Days</option>
+                        <option value="This Month">This Month</option>
+                        <option value="All Time">All Time</option>
+                    </select>
+                    <ChevronDown size={14} style={{ color: TEXT_SECONDARY, pointerEvents: 'none' }} />
+                </div>
             </div>
 
             {loading ? (
@@ -86,36 +148,38 @@ function HomePage() {
                 </div>
             ) : (
                 <>
-                    {/* Top Dashboard Metric Cards */}
-                    <div className="lf-summary-grid">
-                        {summaryCards.map((card) => {
+                    {/* Interactive 4-Card Metric Grid */}
+                    <div className="lf-metric-grid">
+                        {metricCards.map((card) => {
                             const Icon = card.icon;
                             return (
                                 <button
                                     key={card.label}
                                     type="button"
-                                    className="lf-summary-card"
+                                    className="lf-metric-card"
                                     onClick={() => navigate(card.path)}
                                 >
-                                    <div className="lf-summary-icon">
-                                        <Icon size={20} style={{ color: ACCENT_YELLOW }} />
-                                    </div>
-                                    <div style={{ minWidth: 0 }}>
-                                        <div className="lf-summary-value">{card.value}</div>
-                                        <div className="lf-summary-label">{card.label}</div>
-                                        {card.note && (
-                                            <div className="lf-summary-note">
+                                    <div className="lf-metric-top">
+                                        <div className="lf-metric-icon">
+                                            <Icon size={20} style={{ color: ACCENT_YELLOW }} />
+                                        </div>
+                                        {card.trend ? (
+                                            <span className="lf-metric-trend">
                                                 <AlertCircle size={12} />
-                                                {card.note}
-                                            </div>
+                                                {card.trend}
+                                            </span>
+                                        ) : (
+                                            <ArrowRight size={14} className="lf-metric-arrow" />
                                         )}
                                     </div>
+                                    <div className="lf-metric-value">{card.value}</div>
+                                    <div className="lf-metric-label">{card.label}</div>
                                 </button>
                             );
                         })}
                     </div>
 
-                    {/* Recent Activity + Quick Actions */}
+                    {/* Dashboard Panels: Recent Activity + AI Alerts Feed */}
                     <div className="lf-dashboard-panels">
                         {/* Recent Activity */}
                         <div style={{
@@ -173,24 +237,56 @@ function HomePage() {
                             )}
                         </div>
 
-                        {/* Quick Actions */}
+                        {/* AI Insights & Alerts Feed */}
                         <div style={{
                             padding: '22px', borderRadius: '14px',
                             background: SURFACE,
                             border: `1px solid ${BORDER}`
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                                <Zap size={16} style={{ color: ACCENT_YELLOW }} />
-                                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: TEXT_PRIMARY }}>
-                                    Quick Actions
-                                </h3>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <Zap size={16} style={{ color: ACCENT_YELLOW }} />
+                                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: TEXT_PRIMARY }}>
+                                        Alerts
+                                    </h3>
+                                </div>
+                                <span style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: PRIMARY,
+                                    background: 'rgba(128, 91, 231, 0.12)',
+                                    padding: '3px 8px',
+                                    borderRadius: '6px'
+                                }}>
+                                    AI Insights
+                                </span>
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <ActionButton icon={MessageSquare} label="View Conversations" path="/conversations" onClick={navigate} />
-                                <ActionButton icon={TrendingUp} label="Revenue Opportunities" path="/opportunities" onClick={navigate} />
-                                <ActionButton icon={Target} label="AI Analytics" path="/analytics" onClick={navigate} />
-                                <ActionButton icon={Users} label="Knowledge Base" path="/knowledge" onClick={navigate} />
-                                <ActionButton icon={Activity} label="Pending Approvals" path="/approvals" onClick={navigate} />
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {alertsFeed.map((alert) => {
+                                    const AlertIcon = alert.icon;
+                                    return (
+                                        <div key={alert.id} className="lf-alert-card">
+                                            <div className="lf-alert-body">
+                                                <div className="lf-alert-icon-wrap" style={{ background: alert.bgIcon }}>
+                                                    <span className="lf-alert-dot" style={{ backgroundColor: alert.dotColor }} />
+                                                    <AlertIcon size={14} style={{ color: alert.iconColor }} />
+                                                </div>
+                                                <p className="lf-alert-text">
+                                                    {alert.text}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="lf-alert-action-btn"
+                                                onClick={() => navigate(alert.path)}
+                                            >
+                                                <span>{alert.actionText}</span>
+                                                <ArrowRight size={13} />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -201,16 +297,58 @@ function HomePage() {
                 @keyframes lf-spin { to { transform: rotate(360deg); } }
                 .spin { animation: lf-spin 1s linear infinite; }
 
-                .lf-summary-grid {
+                /* Header row with time filter */
+                .lf-header-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 28px;
+                    flex-wrap: wrap;
+                }
+                .lf-time-filter-wrapper {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 12px;
+                    border-radius: 10px;
+                    background: ${SURFACE};
+                    border: 1px solid ${BORDER};
+                    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+                }
+                .lf-time-filter-wrapper:focus-within {
+                    border-color: ${PRIMARY};
+                    box-shadow: 0 0 0 2px rgba(128, 91, 231, 0.2);
+                }
+                .lf-time-filter-select {
+                    background: transparent;
+                    border: none;
+                    outline: none;
+                    color: ${TEXT_PRIMARY};
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    appearance: none;
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    padding-right: 4px;
+                    font-family: inherit;
+                }
+                .lf-time-filter-select option {
+                    background: #1E2025;
+                    color: #F5F6FA;
+                }
+
+                /* 4-Card Metric Grid */
+                .lf-metric-grid {
                     display: grid;
-                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
                     gap: 16px;
                     margin-bottom: 24px;
                 }
-                .lf-summary-card {
+                .lf-metric-card {
                     display: flex;
-                    align-items: center;
-                    gap: 16px;
+                    flex-direction: column;
                     padding: 20px 22px;
                     border-radius: 14px;
                     background: ${SURFACE};
@@ -218,110 +356,173 @@ function HomePage() {
                     cursor: pointer;
                     text-align: left;
                     font: inherit;
-                    transition: border-color 0.2s, transform 0.2s;
+                    transition: border-color 0.2s ease, transform 0.2s ease;
+                    width: 100%;
                 }
-                .lf-summary-card:hover {
+                .lf-metric-card:hover {
                     border-color: ${PRIMARY};
                     transform: translateY(-2px);
                 }
-                .lf-summary-card:focus-visible {
+                .lf-metric-card:focus-visible {
                     outline: 2px solid ${PRIMARY};
                     outline-offset: 2px;
                 }
-                .lf-summary-icon {
-                    width: 44px;
-                    height: 44px;
-                    min-width: 44px;
+                .lf-metric-top {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 14px;
+                    width: 100%;
+                }
+                .lf-metric-icon {
+                    width: 42px;
+                    height: 42px;
+                    min-width: 42px;
                     border-radius: 12px;
                     background: rgba(230, 184, 77, 0.12);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                 }
-                .lf-summary-value {
-                    font-size: 26px;
-                    font-weight: 700;
-                    line-height: 1.15;
-                    color: ${TEXT_PRIMARY};
-                }
-                .lf-summary-label {
-                    margin-top: 2px;
-                    font-size: 13px;
+                .lf-metric-arrow {
                     color: ${TEXT_SECONDARY};
+                    transition: color 0.15s ease, transform 0.15s ease;
                 }
-                .lf-summary-note {
-                    display: flex;
+                .lf-metric-card:hover .lf-metric-arrow {
+                    color: ${TEXT_PRIMARY};
+                    transform: translateX(2px);
+                }
+                .lf-metric-trend {
+                    display: inline-flex;
                     align-items: center;
                     gap: 4px;
-                    margin-top: 6px;
                     font-size: 11px;
                     font-weight: 600;
                     color: ${ACCENT_YELLOW};
+                    background: rgba(230, 184, 77, 0.12);
+                    padding: 3px 8px;
+                    border-radius: 6px;
+                }
+                .lf-metric-value {
+                    font-size: 24px;
+                    font-weight: 700;
+                    line-height: 1.2;
+                    color: ${TEXT_PRIMARY};
+                    margin-bottom: 4px;
+                }
+                .lf-metric-label {
+                    font-size: 13px;
+                    color: ${TEXT_SECONDARY};
                 }
 
+                /* Panels */
                 .lf-dashboard-panels {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
                     gap: 20px;
                 }
 
-                .lf-quick-action {
+                /* Alerts Card Feed */
+                .lf-alert-card {
                     display: flex;
                     align-items: center;
-                    gap: 10px;
-                    width: 100%;
-                    padding: 10px 12px;
-                    border-radius: 10px;
-                    font-size: 13px;
-                    font-weight: 500;
-                    text-align: left;
-                    cursor: pointer;
-                    transition: background-color 0.15s, border-color 0.15s;
+                    justify-content: space-between;
+                    gap: 14px;
+                    padding: 13px 15px;
+                    border-radius: 12px;
+                    background: rgba(255, 255, 255, 0.02);
+                    border: 1px solid ${BORDER};
+                    transition: background-color 0.15s ease, border-color 0.15s ease;
                 }
-                .lf-quick-action-icon {
-                    width: 32px;
-                    height: 32px;
+                .lf-alert-card:hover {
+                    background: var(--bg-hover);
+                    border-color: rgba(128, 91, 231, 0.4);
+                }
+                .lf-alert-body {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    flex: 1;
+                    min-width: 0;
+                }
+                .lf-alert-icon-wrap {
+                    width: 30px;
+                    height: 30px;
+                    min-width: 30px;
                     border-radius: 8px;
-                    background: rgba(128, 91, 231, 0.15);
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    position: relative;
                 }
-                .lf-quick-action-arrow {
-                    color: ${TEXT_SECONDARY};
-                    transition: color 0.15s, transform 0.15s;
+                .lf-alert-dot {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    position: absolute;
+                    top: -1px;
+                    right: -1px;
                 }
-                .lf-quick-action:hover .lf-quick-action-arrow {
+                .lf-alert-text {
+                    margin: 0;
+                    font-size: 13px;
+                    font-weight: 500;
                     color: ${TEXT_PRIMARY};
-                    transform: translateX(2px);
+                    line-height: 1.4;
+                }
+                .lf-alert-action-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(128, 91, 231, 0.35);
+                    background: rgba(128, 91, 231, 0.12);
+                    color: #9B7DF0;
+                    font-size: 12px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+                    flex-shrink: 0;
+                    font-family: inherit;
+                }
+                .lf-alert-action-btn:hover {
+                    background: ${PRIMARY};
+                    color: #FFFFFF;
+                    border-color: ${PRIMARY};
+                    transform: translateX(1px);
                 }
 
-                @media (max-width: 900px) {
-                    .lf-summary-grid { grid-template-columns: 1fr; }
-                    .lf-dashboard-panels { grid-template-columns: 1fr; }
+                @media (max-width: 1100px) {
+                    .lf-metric-grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                    }
+                    .lf-dashboard-panels {
+                        grid-template-columns: 1fr;
+                    }
                 }
-                @media (min-width: 901px) and (max-width: 1100px) {
-                    .lf-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                @media (max-width: 768px) {
+                    .lf-alert-card {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    .lf-alert-action-btn {
+                        align-self: flex-end;
+                        margin-top: 4px;
+                    }
+                }
+                @media (max-width: 640px) {
+                    .lf-header-row {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    .lf-metric-grid {
+                        grid-template-columns: 1fr;
+                    }
                 }
             `}</style>
         </div>
-    );
-}
-
-// Quick Action row - uses the design system's dark "Secondary" button style
-function ActionButton({ icon: Icon, label, path, onClick }) {
-    return (
-        <button
-            type="button"
-            className="btn-secondary lf-quick-action"
-            onClick={() => onClick(path)}
-        >
-            <div className="lf-quick-action-icon">
-                <Icon size={14} style={{ color: PRIMARY }} />
-            </div>
-            <span style={{ flex: 1 }}>{label}</span>
-            <ArrowRight size={14} className="lf-quick-action-arrow" />
-        </button>
     );
 }
 
