@@ -5,7 +5,7 @@ import leadflowService from '../services/leadflowService';
 import {
     MessageSquare, DollarSign, Target, CheckSquare,
     Activity, Zap, ArrowRight, Loader2, Calendar, ChevronDown,
-    AlertTriangle, AlertCircle, RefreshCw, ShoppingBag, TrendingUp, BarChart3
+    AlertTriangle, AlertCircle, RefreshCw
 } from 'lucide-react';
 
 // Design-system tokens (fallbacks match the dark palette in index.css)
@@ -64,42 +64,8 @@ const MOCK_OPPORTUNITIES_DATA = [
     { id: 'opp-7', title: 'Tarek Mansour — Corporate Bulk Order', potentialRevenue: 12400, status: 'WON', hoursAgo: 1200 },
 ];
 
-const CHART_SERIES_BY_RANGE = {
-    '24H': [
-        { label: '00:00', sales: 850, orders: 1 },
-        { label: '04:00', sales: 1200, orders: 1 },
-        { label: '08:00', sales: 1798, orders: 1 },
-        { label: '12:00', sales: 3299, orders: 2 },
-        { label: '16:00', sales: 2450, orders: 1 },
-        { label: '20:00', sales: 4098, orders: 2 },
-    ],
-    '7D': [
-        { label: 'Mon', sales: 2898, orders: 2 },
-        { label: 'Tue', sales: 3499, orders: 2 },
-        { label: 'Wed', sales: 5499, orders: 3 },
-        { label: 'Thu', sales: 4299, orders: 2 },
-        { label: 'Fri', sales: 6150, orders: 4 },
-        { label: 'Sat', sales: 7397, orders: 4 },
-        { label: 'Sun', sales: 9195, orders: 5 },
-    ],
-    '30D': [
-        { label: 'Week 1', sales: 8096, orders: 4 },
-        { label: 'Week 2', sales: 11397, orders: 6 },
-        { label: 'Week 3', sales: 14895, orders: 8 },
-        { label: 'Week 4', sales: 21891, orders: 11 },
-    ],
-    'All Time': [
-        { label: 'May', sales: 16340, orders: 7 },
-        { label: 'Jun', sales: 22450, orders: 10 },
-        { label: 'Jul', sales: 28900, orders: 13 },
-        { label: 'Aug', sales: 34388, orders: 16 },
-        { label: 'Sep', sales: 41200, orders: 19 },
-        { label: 'Oct', sales: 50728, orders: 24 },
-    ],
-};
-
 /**
- * Filtering function that dynamically recalculates dashboard metrics and chart data
+ * Filtering function that dynamically recalculates dashboard metrics
  * based on the selected `timeRange` ("24H", "7D", "30D", "All Time").
  */
 function filterDashboardDataByTimeRange(timeRange, liveSupabaseData) {
@@ -111,12 +77,12 @@ function filterDashboardDataByTimeRange(timeRange, liveSupabaseData) {
     };
     const maxHours = maxHoursMap[timeRange] ?? Infinity;
 
-    // Filter orders within the time window
+    // Filter records within the time window
     const filteredOrders = MOCK_ORDERS_DATA.filter(o => o.hoursAgo <= maxHours);
     const filteredConversations = MOCK_CONVERSATIONS_DATA.filter(c => c.hoursAgo <= maxHours);
     const filteredOpportunities = MOCK_OPPORTUNITIES_DATA.filter(op => op.hoursAgo <= maxHours);
 
-    // Incorporate live Supabase totals into "All Time" (or proportionally when live data is present)
+    // Incorporate live Supabase totals into "All Time" (or filtered window)
     const totalSales = filteredOrders.reduce((sum, ord) => sum + ord.amount, 0);
     const ordersCount = filteredOrders.length;
     const averageOrderValue = ordersCount > 0 ? Math.round(totalSales / ordersCount) : 0;
@@ -142,8 +108,6 @@ function filterDashboardDataByTimeRange(timeRange, liveSupabaseData) {
                 ? 3
                 : (liveSupabaseData?.pendingApprovals || 4);
 
-    const chartData = CHART_SERIES_BY_RANGE[timeRange] || CHART_SERIES_BY_RANGE['All Time'];
-
     const recentActivity = filteredConversations.map(c => ({
         id: c.id,
         customerName: c.customerName,
@@ -159,7 +123,6 @@ function filterDashboardDataByTimeRange(timeRange, liveSupabaseData) {
         pipelineRevenue,
         winRate,
         pendingApprovals,
-        chartData,
         recentActivity,
     };
 }
@@ -270,7 +233,7 @@ function HomePage() {
             });
     }, [fetchDashboardData]);
 
-    // Dynamically recalculate metrics and chart data whenever `timeRange` or `supabaseMetrics` changes
+    // Dynamically recalculate metrics whenever `timeRange` or `supabaseMetrics` changes
     const filteredData = useMemo(
         () => filterDashboardDataByTimeRange(timeRange, supabaseMetrics),
         [timeRange, supabaseMetrics]
@@ -341,8 +304,6 @@ function HomePage() {
             bgIcon: 'rgba(239, 68, 68, 0.12)',
         },
     ];
-
-    const maxChartSales = Math.max(...filteredData.chartData.map(d => d.sales), 1);
 
     return (
         <div style={{ padding: '24px 32px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -466,78 +427,6 @@ function HomePage() {
                                 </button>
                             );
                         })}
-                    </div>
-
-                    {/* Dynamic Sales, Orders, AOV & Performance Chart Section */}
-                    <div style={{
-                        padding: '22px',
-                        borderRadius: '14px',
-                        background: SURFACE,
-                        border: `1px solid ${BORDER}`,
-                        marginBottom: '24px'
-                    }}>
-                        <div className="lf-chart-header">
-                            <div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                    <BarChart3 size={17} style={{ color: ACCENT_YELLOW }} />
-                                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: TEXT_PRIMARY }}>
-                                        Revenue & Orders Analytics
-                                    </h3>
-                                    <span style={{
-                                        fontSize: '11px',
-                                        fontWeight: 600,
-                                        color: ACCENT_YELLOW,
-                                        background: 'rgba(230, 184, 77, 0.12)',
-                                        padding: '2px 8px',
-                                        borderRadius: '6px'
-                                    }}>
-                                        {timeRange}
-                                    </span>
-                                </div>
-                                <p style={{ margin: 0, fontSize: '12px', color: TEXT_SECONDARY }}>
-                                    Dynamically recalculated sales metrics and trend distribution
-                                </p>
-                            </div>
-
-                            {/* Recalculated Sales Metrics: Total Sales, Orders, Average Order Value */}
-                            <div className="lf-sales-kpis">
-                                <div className="lf-sales-kpi-item">
-                                    <span className="lf-sales-kpi-label">Total Sales</span>
-                                    <span className="lf-sales-kpi-value">{formatEGP(filteredData.totalSales)}</span>
-                                </div>
-                                <div className="lf-sales-kpi-item">
-                                    <span className="lf-sales-kpi-label">Orders</span>
-                                    <span className="lf-sales-kpi-value">{filteredData.ordersCount}</span>
-                                </div>
-                                <div className="lf-sales-kpi-item">
-                                    <span className="lf-sales-kpi-label">Average Order Value</span>
-                                    <span className="lf-sales-kpi-value">{formatEGP(filteredData.averageOrderValue)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Dynamic Bar & Trend Visualization */}
-                        <div className="lf-chart-bars">
-                            {filteredData.chartData.map((point) => {
-                                const heightPct = Math.max(Math.round((point.sales / maxChartSales) * 100), 10);
-                                return (
-                                    <div key={point.label} className="lf-chart-col">
-                                        <div className="lf-chart-bar-value">
-                                            {formatEGP(point.sales)}
-                                        </div>
-                                        <div className="lf-chart-bar-track">
-                                            <div
-                                                className="lf-chart-bar-fill"
-                                                style={{ height: `${heightPct}%` }}
-                                                title={`${point.label}: ${formatEGP(point.sales)} (${point.orders} orders)`}
-                                            />
-                                        </div>
-                                        <div className="lf-chart-bar-label">{point.label}</div>
-                                        <div className="lf-chart-bar-sub">{point.orders} ord</div>
-                                    </div>
-                                );
-                            })}
-                        </div>
                     </div>
 
                     {/* Dashboard Panels: Recent Activity + AI Alerts Feed */}
@@ -735,89 +624,6 @@ function HomePage() {
                     height: 6px;
                     border-radius: 50%;
                     background: ${ACCENT_YELLOW};
-                }
-
-                /* Sales & Chart Section */
-                .lf-chart-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: flex-start;
-                    gap: 16px;
-                    margin-bottom: 22px;
-                    flex-wrap: wrap;
-                }
-                .lf-sales-kpis {
-                    display: flex;
-                    gap: 16px;
-                    flex-wrap: wrap;
-                }
-                .lf-sales-kpi-item {
-                    display: flex;
-                    flex-direction: column;
-                    padding: 10px 16px;
-                    border-radius: 10px;
-                    background: rgba(255, 255, 255, 0.02);
-                    border: 1px solid ${BORDER};
-                    min-width: 130px;
-                }
-                .lf-sales-kpi-label {
-                    font-size: 11px;
-                    color: ${TEXT_SECONDARY};
-                    margin-bottom: 4px;
-                }
-                .lf-sales-kpi-value {
-                    font-size: 16px;
-                    font-weight: 700;
-                    color: ${TEXT_PRIMARY};
-                }
-                .lf-chart-bars {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-                    gap: 14px;
-                    align-items: end;
-                    height: 190px;
-                    padding-top: 20px;
-                }
-                .lf-chart-col {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    height: 100%;
-                }
-                .lf-chart-bar-value {
-                    font-size: 11px;
-                    font-weight: 600;
-                    color: ${TEXT_SECONDARY};
-                    margin-bottom: 6px;
-                    white-space: nowrap;
-                }
-                .lf-chart-bar-track {
-                    flex: 1;
-                    width: 100%;
-                    max-width: 44px;
-                    background: rgba(255, 255, 255, 0.03);
-                    border-radius: 8px;
-                    display: flex;
-                    align-items: flex-end;
-                    overflow: hidden;
-                    padding: 2px;
-                }
-                .lf-chart-bar-fill {
-                    width: 100%;
-                    background: linear-gradient(180deg, ${PRIMARY} 0%, rgba(128, 91, 231, 0.45) 100%);
-                    border-top: 2px solid ${ACCENT_YELLOW};
-                    border-radius: 6px;
-                    transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-                }
-                .lf-chart-bar-label {
-                    margin-top: 8px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: ${TEXT_PRIMARY};
-                }
-                .lf-chart-bar-sub {
-                    font-size: 10px;
-                    color: ${TEXT_SECONDARY};
                 }
 
                 /* Error Alert Banner */
