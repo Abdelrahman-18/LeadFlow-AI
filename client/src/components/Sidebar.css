@@ -621,3 +621,95 @@
 [dir="rtl"] .footer-link {
     text-align: right;
 }
+
+
+/* =============== COLLAPSED STATE & TOGGLE =============== */
+
+.sidebar {
+    transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 250ms cubic-bezier(0.4, 0, 0.2, 1),
+        background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+    width: 64px;
+}
+
+.sidebar-collapse-btn {
+    margin-left: auto;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sidebar-collapse-btn:hover {
+    background-color: var(--bg-hover-surface);
+    color: var(--text-primary);
+    border-color: var(--primary-purple);
+}
+
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding: 0 8px;
+}
+
+.sidebar.collapsed .sidebar-collapse-btn {
+    margin-left: 0;
+}
+
+.sidebar.collapsed .nav-section {
+    margin-top: 8px;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 11px 0;
+}
+
+.sidebar.collapsed .user-plate {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 6px;
+    gap: 10px;
+}
+
+.sidebar.collapsed .user-info {
+    justify-content: center;
+    flex: initial;
+}
+
+.sidebar.collapsed .control-cluster {
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Mobile Responsive Hide when Collapsed */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 240px;
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar.collapsed {
+        width: 240px;
+        transform: translateX(-100%);
+        pointer-events: none;
+        box-shadow: none;
+    }
+
+    [dir="rtl"] .sidebar.collapsed {
+        transform: translateX(100%);
+    }
+}
